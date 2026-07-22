@@ -1,15 +1,2007 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Class 1</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Information Retrieval &amp; Document Image Analysis — Field Notes</title>
+<style>
+  :root{
+    --paper:#FBF9F4;
+    --paper-alt:#F3EFE4;
+    --ink:#1B2A2E;
+    --ink-soft:#3E4C4F;
+    --forest:#2F6F62;
+    --forest-dark:#204A41;
+    --sienna:#C97B3D;
+    --sienna-dark:#9C5A26;
+    --topo-blue:#3D5A80;
+    --topo-blue-dark:#28405E;
+    --contour:#D8D2C4;
+    --contour-dark:#B9AE96;
+    --danger:#A6432E;
+    --serif: "Iowan Old Style","Palatino Linotype","Book Antiqua",Georgia,serif;
+    --sans: -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+    --mono: "SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;
+  }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:var(--sans);
+    line-height:1.65;
+    font-size:16.5px;
+  }
+
+  /* ---------- Topographic background texture (signature element) ---------- */
+  .contour-band{
+    position:relative;
+    overflow:hidden;
+    background:
+      radial-gradient(ellipse at 20% 30%, rgba(47,111,98,0.10), transparent 60%),
+      radial-gradient(ellipse at 80% 70%, rgba(201,123,61,0.10), transparent 55%),
+      var(--paper);
+  }
+
+  header.masthead{
+    padding:64px 24px 40px;
+    text-align:center;
+    background:
+      linear-gradient(180deg, rgba(27,42,46,0.03), transparent),
+      var(--paper);
+    border-bottom:2px solid var(--contour);
+    position:relative;
+  }
+  header.masthead svg.contours{
+    position:absolute; inset:0; width:100%; height:100%; opacity:0.35; pointer-events:none;
+  }
+  .eyebrow{
+    font-family:var(--mono);
+    letter-spacing:0.18em;
+    text-transform:uppercase;
+    font-size:12.5px;
+    color:var(--forest-dark);
+    font-weight:600;
+  }
+  h1.title{
+    font-family:var(--serif);
+    font-weight:700;
+    font-size:clamp(30px,5vw,52px);
+    margin:14px 0 8px;
+    color:var(--ink);
+    letter-spacing:-0.01em;
+  }
+  p.subtitle{
+    font-family:var(--serif);
+    font-style:italic;
+    color:var(--ink-soft);
+    font-size:19px;
+    max-width:700px;
+    margin:0 auto;
+  }
+  .meta-row{
+    margin-top:26px;
+    display:flex; gap:28px; justify-content:center; flex-wrap:wrap;
+    font-family:var(--mono); font-size:12.5px; color:var(--ink-soft);
+  }
+  .meta-row span b{color:var(--ink); font-weight:700;}
+
+  .wrap{max-width:920px; margin:0 auto; padding:0 24px;}
+
+  /* ---------- Table of contents ---------- */
+  nav.toc{
+    background:var(--paper-alt);
+    border:1px solid var(--contour);
+    border-radius:4px;
+    padding:28px 32px;
+    margin:48px auto;
+    max-width:920px;
+  }
+  nav.toc h2{
+    font-family:var(--serif); font-size:15px; text-transform:uppercase; letter-spacing:0.14em;
+    color:var(--forest-dark); margin:0 0 16px; border-bottom:1px solid var(--contour-dark); padding-bottom:10px;
+  }
+  nav.toc ol{counter-reset:toc; list-style:none; margin:0; padding:0; columns:1;}
+  nav.toc > ol > li{margin-bottom:9px;}
+  nav.toc ol ol{margin:6px 0 6px 22px; padding:0; list-style:none;}
+  nav.toc ol ol li{margin-bottom:5px; font-size:14.5px;}
+  nav.toc a{color:var(--ink); text-decoration:none; border-bottom:1px dotted var(--contour-dark);}
+  nav.toc a:hover{color:var(--forest-dark); border-bottom-color:var(--forest);}
+  nav.toc .chap-num{color:var(--sienna-dark); font-family:var(--mono); font-weight:700; margin-right:8px;}
+
+  /* ---------- Chapter structure ---------- */
+  section.chapter{
+    max-width:920px; margin:0 auto; padding:60px 24px 20px;
+    border-top:3px solid var(--ink);
+  }
+  .chap-label{
+    font-family:var(--mono); text-transform:uppercase; letter-spacing:0.16em;
+    color:var(--sienna-dark); font-size:12.5px; font-weight:700;
+  }
+  h2.chap-title{
+    font-family:var(--serif); font-size:clamp(26px,4vw,38px); margin:8px 0 6px; color:var(--ink);
+  }
+  p.chap-dek{ color:var(--ink-soft); font-size:17px; font-family:var(--serif); font-style:italic; max-width:680px;}
+
+  .topic{margin:44px 0 56px; padding-top:6px;}
+  .topic > h3.topic-title{
+    font-family:var(--serif); font-size:24px; color:var(--forest-dark);
+    border-bottom:2px solid var(--contour); padding-bottom:8px; margin-bottom:4px;
+    scroll-margin-top:20px;
+  }
+  .topic-num{font-family:var(--mono); color:var(--contour-dark); font-size:15px; margin-right:6px;}
+
+  h4.sub{
+    font-family:var(--sans); font-weight:700; font-size:13px; text-transform:uppercase;
+    letter-spacing:0.09em; color:var(--topo-blue-dark); margin:26px 0 8px;
+    display:flex; align-items:center; gap:8px;
+  }
+  h4.sub::before{content:""; width:14px; height:2px; background:var(--topo-blue); display:inline-block;}
+
+  p{margin:0 0 14px;}
+  ul, ol{margin:0 0 14px; padding-left:22px;}
+  li{margin-bottom:5px;}
+
+  /* ---------- Callouts ---------- */
+  .callout{
+    border-left:4px solid var(--forest);
+    background:rgba(47,111,98,0.06);
+    padding:14px 18px; border-radius:0 6px 6px 0; margin:18px 0;
+    font-size:15px;
+  }
+  .callout.warn{border-color:var(--sienna); background:rgba(201,123,61,0.08);}
+  .callout.tip{border-color:var(--topo-blue); background:rgba(61,90,128,0.07);}
+  .callout b.tag{
+    display:block; font-family:var(--mono); text-transform:uppercase; font-size:11px;
+    letter-spacing:0.1em; color:var(--forest-dark); margin-bottom:4px;
+  }
+  .callout.warn b.tag{color:var(--sienna-dark);}
+  .callout.tip b.tag{color:var(--topo-blue-dark);}
+
+  /* ---------- Formula boxes ---------- */
+  .formula-box{
+    background:var(--ink); color:var(--paper);
+    border-radius:8px; padding:22px 26px; margin:20px 0;
+    font-family:var(--mono);
+  }
+  .formula-box .formula{
+    font-size:22px; text-align:center; letter-spacing:0.02em; margin-bottom:14px; color:#F4E9D8;
+  }
+  .formula-box .legend{font-size:14px; line-height:1.7; color:#D9E4E0;}
+  .formula-box .legend b{color:var(--sienna); font-weight:700;}
+
+  /* ---------- Worked example ---------- */
+  .worked{
+    border:1.5px dashed var(--contour-dark); border-radius:6px; padding:16px 20px; margin:16px 0;
+    background:#fff;
+  }
+  .worked .wk-label{
+    font-family:var(--mono); font-size:11.5px; text-transform:uppercase; letter-spacing:0.1em;
+    color:var(--sienna-dark); font-weight:700; margin-bottom:8px; display:block;
+  }
+
+  /* ---------- Tables ---------- */
+  table.cmp{
+    width:100%; border-collapse:collapse; margin:18px 0; font-size:14.5px;
+  }
+  table.cmp th{
+    background:var(--forest-dark); color:#fff; text-align:left; padding:10px 14px; font-family:var(--serif); font-weight:700;
+  }
+  table.cmp td{padding:10px 14px; border-bottom:1px solid var(--contour);}
+  table.cmp tr:nth-child(even) td{background:var(--paper-alt);}
+
+  /* ---------- Diagram frame ---------- */
+  .diagram{
+    background:#fff; border:1px solid var(--contour); border-radius:8px;
+    padding:18px; margin:22px 0; text-align:center;
+  }
+  .diagram svg{max-width:100%; height:auto;}
+  .diagram .cap{
+    font-family:var(--mono); font-size:12px; color:var(--ink-soft); margin-top:10px; text-align:left;
+  }
+
+  /* ---------- IR connection box ---------- */
+  .ir-box{
+    background:var(--topo-blue-dark); color:#fff; border-radius:8px; padding:20px 24px; margin:22px 0;
+  }
+  .ir-box h4.sub{color:#BFD3E8; margin-top:0;}
+  .ir-box h4.sub::before{background:#BFD3E8;}
+  .ir-box ul{margin-bottom:0;}
+  .ir-box b{color:#F4E9D8;}
+
+  /* ---------- Exam / summary blocks ---------- */
+  .grid2{display:grid; grid-template-columns:1fr 1fr; gap:18px; margin:18px 0;}
+  @media (max-width:700px){.grid2{grid-template-columns:1fr;}}
+  .card{
+    background:var(--paper-alt); border:1px solid var(--contour); border-radius:8px; padding:16px 20px;
+  }
+  .card h5{
+    font-family:var(--mono); text-transform:uppercase; font-size:12px; letter-spacing:0.08em;
+    color:var(--sienna-dark); margin:0 0 10px;
+  }
+  .mnemonic{
+    background:#fff8ea; border:1px dashed var(--sienna); border-radius:8px; padding:14px 18px; margin:14px 0;
+    font-family:var(--serif); font-style:italic; color:var(--sienna-dark); font-size:15px;
+  }
+
+  code{font-family:var(--mono); background:var(--paper-alt); padding:1px 6px; border-radius:3px; font-size:0.92em;}
+
+  /* ---------- Back to top ---------- */
+  a.top-link{
+    display:inline-block; margin-top:10px; font-family:var(--mono); font-size:12px;
+    color:var(--forest-dark); text-decoration:none; border-bottom:1px dotted var(--forest);
+  }
+
+  footer{
+    text-align:center; padding:50px 24px 70px; color:var(--ink-soft); font-family:var(--mono); font-size:12.5px;
+    border-top:2px solid var(--ink); margin-top:20px;
+  }
+
+  /* ---------- Print ---------- */
+  @media print{
+    body{font-size:12pt;}
+    section.chapter{page-break-before:always; border-top:none;}
+    nav.toc{page-break-after:always;}
+    .diagram, .formula-box, .callout, .ir-box, .card{ break-inside:avoid; }
+    a{color:inherit !important;}
+    header.masthead{padding:20px 0;}
+  }
+  @page{ size:A4; margin:18mm; }
+</style>
 </head>
 <body>
 
-<h1>Information Retrieval</h1>
+<header class="masthead">
+  <svg class="contours" viewBox="0 0 1200 260" preserveAspectRatio="none">
+    <path d="M0,180 C200,140 300,220 500,170 C700,120 800,200 1200,150" fill="none" stroke="#2F6F62" stroke-width="1.5"/>
+    <path d="M0,200 C220,160 320,235 520,190 C720,145 820,215 1200,175" fill="none" stroke="#C97B3D" stroke-width="1.2"/>
+    <path d="M0,220 C240,185 340,250 540,215 C740,175 840,235 1200,205" fill="none" stroke="#3D5A80" stroke-width="1"/>
+    <path d="M0,160 C180,120 280,200 480,150 C680,100 780,180 1200,130" fill="none" stroke="#2F6F62" stroke-width="0.8" opacity="0.6"/>
+  </svg>
+  <div class="eyebrow">ISI Bangalore · M.Sc. Library &amp; Information Science · Semester III</div>
+  <h1 class="title">Information Retrieval, Read as Terrain</h1>
+  <p class="subtitle">A first-principles field guide to Paper 11 — where document image analysis, pattern recognition and information retrieval are treated as one continuous landscape, exactly as Dr. Daya Sagar teaches it.</p>
+  <div class="meta-row">
+    <span>Course: <b>Information Retrieval</b></span>
+    <span>Instructor: <b>Dr. Daya Sagar</b></span>
+    <span>Prepared as: <b>Primary study material</b></span>
+    <span>Level: <b>Zero prior assumed</b></span>
+  </div>
+</header>
 
-<h2>Class 1</h2>
+<div class="wrap">
+<p style="margin-top:36px; color:var(--ink-soft); font-size:15px;">
+Your professor moves fast because in his mind, a scanned page, a satellite image, a mountain range and a search
+query are all the <em>same kind of object</em>: a rectangle of numbers with peaks, valleys, and a skeleton hiding
+inside it. These notes slow that down. We build every idea from nothing — no prior image processing, no prior IR —
+and every chapter ends by tying the idea back to search engines, OCR, and digital libraries, because that is where
+this course is ultimately going. Read the chapters in order; each one leans on the last.
+</p>
+</div>
 
-<p>This is my first class notes.</p>
+<nav class="toc" id="toc">
+  <h2>Table of Contents</h2>
+  <ol>
+    <li><span class="chap-num">01</span><a href="#ch1">Information Retrieval — The Big Picture</a>
+      <ol>
+        <li><a href="#t1-1">1.1 What "Information Retrieval" Means</a></li>
+        <li><a href="#t1-2">1.2 Extraction vs. Retrieval</a></li>
+      </ol>
+    </li>
+    <li><span class="chap-num">02</span><a href="#ch2">Data as Function, Object and Skeleton</a>
+      <ol>
+        <li><a href="#t2-1">2.1 The Three Faces of Data</a></li>
+      </ol>
+    </li>
+    <li><span class="chap-num">03</span><a href="#ch3">How Space Gets Organised: Packing and Granularity</a>
+      <ol>
+        <li><a href="#t3-1">3.1 Delimiter Space Packing</a></li>
+        <li><a href="#t3-2">3.2 Rectangular Granular Space</a></li>
+      </ol>
+    </li>
+    <li><span class="chap-num">04</span><a href="#ch4">The Geographical Topography Analogy</a>
+      <ol><li><a href="#t4-1">4.1 An Image Is a Landscape</a></li></ol>
+    </li>
+    <li><span class="chap-num">05</span><a href="#ch5">Pixels and the Digital Image</a>
+      <ol>
+        <li><a href="#t5-1">5.1 Pixels</a></li>
+        <li><a href="#t5-2">5.2 The Digital Image</a></li>
+        <li><a href="#t5-3">5.3 The Function f(x,y) = z</a></li>
+        <li><a href="#t5-4">5.4 Pixel Intensity</a></li>
+        <li><a href="#t5-5">5.5 Why Intensity Runs 0–255</a></li>
+        <li><a href="#t5-6">5.6 8-bit Images</a></li>
+      </ol>
+    </li>
+    <li><span class="chap-num">06</span><a href="#ch6">Binary Images, Thresholds and Energy</a>
+      <ol>
+        <li><a href="#t6-1">6.1 The Binary Image</a></li>
+        <li><a href="#t6-2">6.2 Threshold and f<sup>T</sup>(x,y)</a></li>
+        <li><a href="#t6-3">6.3 Image Energy and Σf(x,y) = A</a></li>
+      </ol>
+    </li>
+    <li><span class="chap-num">07</span><a href="#ch7">The Histogram — Turning Terrain into a Graph</a>
+      <ol>
+        <li><a href="#t7-1">7.1 What a Histogram Is</a></li>
+        <li><a href="#t7-2">7.2 Percentage of Pixels</a></li>
+        <li><a href="#t7-3">7.3 Unimodal, Bimodal, Multimodal Histograms</a></li>
+        <li><a href="#t7-4">7.4 Peaks and Valleys</a></li>
+        <li><a href="#t7-5">7.5 Choosing a Threshold from the Histogram</a></li>
+      </ol>
+    </li>
+    <li><span class="chap-num">08</span><a href="#ch8">Synthesis — From Pixels to Search Engines</a></li>
+  </ol>
+</nav>
+<section class="chapter" id="ch1">
+  <div class="chap-label">Chapter 01</div>
+  <h2 class="chap-title">Information Retrieval — The Big Picture</h2>
+  <p class="chap-dek">Before any pixel or formula, you need to know what problem this entire course is solving.</p>
+
+  <div class="topic" id="t1-1">
+    <h3 class="topic-title"><span class="topic-num">1.1</span>What "Information Retrieval" Means</h3>
+
+    <h4 class="sub">Definition</h4>
+    <p><b>Information Retrieval (IR)</b> is the science and engineering of finding material — usually unstructured
+    material like text, images, or documents — from within a large collection, that satisfies a person's
+    <em>information need</em>. It is not about computing an exact answer (like a database query does); it is about
+    finding the most <em>relevant</em> items among many, when relevance itself is fuzzy and a matter of degree.</p>
+
+    <h4 class="sub">Why This Concept Is Needed</h4>
+    <p>A library holds a million books. A search engine indexes trillions of pages. No human can check them one by
+    one. IR exists because collections are too large for exhaustive human search, and because what a person "needs"
+    is rarely expressed as a precise, database-style query — it's expressed as a rough phrase, a blurry photo, or a
+    partial sentence, and the system must still find what's useful.</p>
+
+    <h4 class="sub">Real-Life Intuition</h4>
+    <p>Think of a librarian before computers existed. A visitor says, "I want something about how rivers shape
+    valleys." The librarian doesn't know a book titled exactly that — but she knows the geography section, she
+    recalls a book on erosion, she flips through a card catalogue of subject headings. That entire mental process —
+    narrowing a vague need down to a short, ranked list of promising books — is Information Retrieval. Google,
+    library OPACs, and OCR-searchable PDF archives are just industrial-scale versions of that librarian.</p>
+
+    <h4 class="sub">Simple Explanation</h4>
+    <p>You type a few words into a search box. The system does not "understand" your sentence the way a person
+    does. Instead, it represents both your query and every document in its collection as some mathematical object
+    (a set of words, a vector, a probability), compares them, and returns the documents whose representation is
+    "closest" to your query's representation. IR is the theory of what "closest" should mean and how to compute it
+    fast over huge collections.</p>
+
+    <h4 class="sub">Technical Explanation</h4>
+    <p>An IR system has three standing pieces:</p>
+    <ul>
+      <li><b>A collection</b> of documents (text, images, audio, video, or mixed — this course will show that
+      an image is just another kind of "document" once you extract the right features from it).</li>
+      <li><b>An index</b> — a precomputed structure (e.g., an inverted index of word → list of documents) that
+      lets the system avoid scanning every document for every query.</li>
+      <li><b>A ranking/matching mechanism</b> — a model (Boolean, Vector Space, Probabilistic, or neural) that scores
+      how well each document matches a query, so results can be sorted by relevance.</li>
+    </ul>
+    <p>The overall pipeline is always: <b>acquire &rarr; represent (index) &rarr; match (retrieve) &rarr; rank &rarr; evaluate.</b>
+    Everything else in this course — pixels, thresholds, histograms — will turn out to be about step 2:
+    <em>how do you represent something (in our case, an image) so it can be indexed and matched at all?</em></p>
+
+    <div class="diagram">
+      <svg viewBox="0 0 760 230" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="arr1" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#2F6F62"/></marker>
+        </defs>
+        <style>.b{font-family:sans-serif;font-size:13px;fill:#1B2A2E;} .lab{font-family:monospace;font-size:11px;fill:#3D5A80;}</style>
+        <rect x="10" y="80" width="120" height="60" rx="8" fill="#F3EFE4" stroke="#2F6F62" stroke-width="1.5"/>
+        <text x="70" y="105" text-anchor="middle" class="b">Documents /</text>
+        <text x="70" y="122" text-anchor="middle" class="b">Images</text>
+
+        <line x1="130" y1="110" x2="185" y2="110" stroke="#2F6F62" stroke-width="2" marker-end="url(#arr1)"/>
+
+        <rect x="190" y="80" width="120" height="60" rx="8" fill="#F3EFE4" stroke="#2F6F62" stroke-width="1.5"/>
+        <text x="250" y="105" text-anchor="middle" class="b">Represent</text>
+        <text x="250" y="122" text-anchor="middle" class="b">(Index)</text>
+
+        <line x1="310" y1="110" x2="365" y2="110" stroke="#2F6F62" stroke-width="2" marker-end="url(#arr1)"/>
+
+        <rect x="370" y="80" width="120" height="60" rx="8" fill="#F3EFE4" stroke="#C97B3D" stroke-width="1.5"/>
+        <text x="430" y="105" text-anchor="middle" class="b">Query</text>
+        <text x="430" y="122" text-anchor="middle" class="b">Match</text>
+
+        <line x1="490" y1="110" x2="545" y2="110" stroke="#2F6F62" stroke-width="2" marker-end="url(#arr1)"/>
+
+        <rect x="550" y="80" width="120" height="60" rx="8" fill="#F3EFE4" stroke="#3D5A80" stroke-width="1.5"/>
+        <text x="610" y="105" text-anchor="middle" class="b">Ranked</text>
+        <text x="610" y="122" text-anchor="middle" class="b">Results</text>
+
+        <path d="M430,160 C430,200 250,200 250,160" fill="none" stroke="#C97B3D" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#arr1)"/>
+        <text x="340" y="215" text-anchor="middle" class="lab">relevance feedback / evaluation loop</text>
+      </svg>
+      <div class="cap">Fig 1.1 — The IR pipeline. This course spends most of its time inside the "Represent" box, for the special case where the document is an image.</div>
+    </div>
+
+    <h4 class="sub">Mathematical Explanation</h4>
+    <p>IR does not have one single formula the way physics has F = ma, but it has one core idea worth writing down
+    now because everything downstream refers back to it: a document D and a query Q are each turned into some
+    representation, and a similarity function sim(D,Q) produces a real number — a score. Retrieval is simply:</p>
+    <div class="formula-box">
+      <div class="formula">Rank(D<sub>1</sub>, D<sub>2</sub>, ..., D<sub>n</sub>) = sort by sim(D<sub>i</sub>, Q), descending</div>
+      <div class="legend">
+        <b>D&#8321;...D&#8345;</b> — every document in the collection.<br>
+        <b>Q</b> — the user's query (words, an image, a sketch).<br>
+        <b>sim(D,Q)</b> — a similarity score; a bigger number means "more relevant."<br>
+        <b>Why it exists:</b> without a numeric score, there is no principled way to decide which of a million
+        documents to show first. Every IR model (Boolean, Vector, Probabilistic) is really just a different
+        definition of <code>sim</code>.
+      </div>
+    </div>
+
+    <h4 class="sub">Worked Example</h4>
+    <div class="worked">
+      <span class="wk-label">Example</span>
+      Suppose a 3-document library has: D1 = "digital image histogram", D2 = "library classification systems",
+      D3 = "image thresholding and histogram". A user queries Q = "image histogram". Using the simplest possible
+      similarity — count of shared words — sim(D1,Q)=2, sim(D2,Q)=0, sim(D3,Q)=2. D1 and D3 tie for first place,
+      D2 is not retrieved at all. This is the entire idea of ranking, just with a tiny, honest vocabulary.
+    </div>
+
+    <h4 class="sub">Applications</h4>
+    <ul>
+      <li>Web search engines (Google, Bing)</li>
+      <li>Library catalogues / OPACs</li>
+      <li>Legal and medical document search</li>
+      <li>Reverse image search</li>
+      <li>Enterprise search over emails and files</li>
+    </ul>
+
+    <div class="ir-box">
+      <h4 class="sub">Connection to Information Retrieval</h4>
+      <ul>
+        <li><b>OCR:</b> before text on a scanned page can be retrieved, it must first be turned into machine-readable
+        text — which needs everything this course covers (binarization, thresholding) before any word-matching happens.</li>
+        <li><b>Google Search:</b> represents web pages as huge sparse vectors of words, IR's Vector Space Model in
+        production at planetary scale.</li>
+        <li><b>Library search:</b> subject headings and classification numbers are hand-built "representations" of
+        books, an older, human-curated cousin of automatic indexing.</li>
+        <li><b>Image retrieval:</b> the "document" is now a picture; "words" become visual features (edges, shapes,
+        histograms) — the subject of the rest of this course.</li>
+        <li><b>Digital libraries:</b> combine all of the above — scanned pages, metadata, and full-text search — into
+        one retrieval system.</li>
+      </ul>
+    </div>
+
+    <h4 class="sub">Common Interview / Exam Questions</h4>
+    <ul>
+      <li>Define Information Retrieval and distinguish it from data retrieval (databases).</li>
+      <li>Draw and explain the general IR system architecture.</li>
+      <li>Why is relevance considered a "fuzzy" rather than exact match in IR?</li>
+    </ul>
+
+    <div class="mnemonic">Memory trick — "A-R-M-R": Acquire, Represent, Match, Rank. Say it like a workout: you always ARM your retrieval system before it can fire.</div>
+
+    <h4 class="sub">Key Points to Remember</h4>
+    <ul>
+      <li>IR is not exact database lookup; it deals with fuzzy relevance over unstructured collections.</li>
+      <li>Every IR system needs: a collection, an index (representation), and a matching/ranking function.</li>
+      <li>Everything about images in this course is really about Step 2: <em>representation</em>.</li>
+    </ul>
+  </div>
+
+  <div class="topic" id="t1-2">
+    <h3 class="topic-title"><span class="topic-num">1.2</span>Extraction vs. Retrieval</h3>
+
+    <h4 class="sub">Definition</h4>
+    <p><b>Extraction</b> is the act of pulling a specific piece of structure or content <em>out of</em> a single
+    object — e.g., pulling the text out of one scanned page, or pulling an object's outline out of one image.
+    <b>Retrieval</b> is the act of finding the right object(s) <em>from among many</em>, based on a need. Extraction
+    happens on one item; retrieval happens across a collection.</p>
+
+    <h4 class="sub">Why This Concept Is Needed</h4>
+    <p>Students often conflate the two because in practice they happen back-to-back: you extract features from
+    every image in a collection, then retrieve the best-matching image for a query. But they solve different
+    problems, and this course's mathematics belongs almost entirely to <em>extraction</em> — extracting objects,
+    skeletons, thresholds and histograms from an image — while classical IR theory (Boolean/Vector/Probabilistic
+    models) belongs to <em>retrieval</em>.</p>
+
+    <h4 class="sub">Real-life Intuition</h4>
+    <p>Extraction is like a chef removing the bones from one fish — a precise, local operation on a single item.
+    Retrieval is like a customer at a fish market pointing at the best fish among a hundred on ice — a comparative,
+    collection-wide decision. You need boned fish (extraction) before you can meaningfully compare and pick
+    (retrieval), but boning a fish and picking a fish are different skills.</p>
+
+    <h4 class="sub">Simple Explanation</h4>
+    <p>If someone hands you one photograph and asks "outline the car in this picture," that's extraction. If someone
+    hands you ten thousand photographs and asks "give me every picture that contains a car," that's retrieval.</p>
+
+    <h4 class="sub">Technical Explanation</h4>
+    <p>Extraction operates at the level of a single document/image: segmentation, feature extraction, object/skeleton
+    extraction, OCR character extraction. Its output is usually a <em>compact representation</em> — a feature vector,
+    a set of coordinates, a binary mask. Retrieval operates at the level of the whole collection: it takes those
+    compact representations (already extracted) and performs indexing, similarity scoring, and ranking. In a modern
+    pipeline, extraction is almost always the pre-processing stage that feeds retrieval.</p>
+
+    <table class="cmp">
+      <tr><th></th><th>Extraction</th><th>Retrieval</th></tr>
+      <tr><td>Scope</td><td>One document / one image</td><td>Entire collection</td></tr>
+      <tr><td>Goal</td><td>Pull out structure, features, or content</td><td>Find the most relevant items</td></tr>
+      <tr><td>Typical output</td><td>Feature vector, mask, text, skeleton</td><td>Ranked list of documents</td></tr>
+      <tr><td>Example operation</td><td>Thresholding an image to find text regions</td><td>Matching a query against an index of many documents</td></tr>
+      <tr><td>Course topic it maps to</td><td>Pixels, thresholds, histograms, skeletons</td><td>Boolean/Vector/Probabilistic IR models</td></tr>
+    </table>
+
+    <h4 class="sub">Mathematical Explanation</h4>
+    <p>Extraction can be written as a function operating on one image:</p>
+    <div class="formula-box">
+      <div class="formula">Extract: I &rarr; F</div>
+      <div class="legend"><b>I</b> — one input image (or document). <b>F</b> — a feature representation (e.g. a
+      histogram, a skeleton, a set of keypoints). Only one input, one output — a local operation.</div>
+    </div>
+    <p>Retrieval, in contrast, operates on the whole collection at once:</p>
+    <div class="formula-box">
+      <div class="formula">Retrieve: {F<sub>1</sub>, F<sub>2</sub>, ..., F<sub>n</sub>}, Q &rarr; ranked subset</div>
+      <div class="legend"><b>F&#8321;...F&#8345;</b> — the extracted features of every document in the collection.
+      <b>Q</b> — the query's own feature representation. The output is a subset, ranked — many inputs, one
+      ordered output — a global, comparative operation.</div>
+    </div>
+
+    <h4 class="sub">Worked Example</h4>
+    <div class="worked">
+      <span class="wk-label">Example</span>
+      A library digitises 500 old manuscripts. <b>Extraction:</b> for each manuscript image, compute a histogram
+      and threshold it to separate ink from paper, then extract the skeleton of each character stroke. This is
+      done 500 times, once per manuscript, independently. <b>Retrieval:</b> a researcher later searches "show me
+      manuscripts with dense cursive handwriting" — the system compares the 500 stored feature sets against this
+      need and ranks the manuscripts. Extraction happened once per document; retrieval happens once per query,
+      across all 500 at once.
+    </div>
+
+    <div class="ir-box">
+      <h4 class="sub">Connection to Information Retrieval</h4>
+      <ul>
+        <li><b>OCR:</b> character/word extraction from a scanned page is extraction; searching across a digitised
+        newspaper archive for a keyword is retrieval.</li>
+        <li><b>Image Retrieval:</b> extracting a colour histogram from one photo is extraction; finding all
+        photos with a similar histogram is retrieval.</li>
+        <li><b>Digital Libraries:</b> extracting metadata/text from a PDF is extraction; a patron's catalogue
+        search is retrieval.</li>
+      </ul>
+    </div>
+
+    <h4 class="sub">Common Interview / Exam Questions</h4>
+    <ul>
+      <li>Differentiate extraction and retrieval with one example each from document image analysis.</li>
+      <li>Why must extraction usually precede retrieval in a multimedia IR pipeline?</li>
+    </ul>
+
+    <div class="mnemonic">Memory trick — "Extraction is 1-to-1, Retrieval is many-to-1": one image goes in, one feature set comes out (extraction); many feature sets go in, one ranked list comes out (retrieval).</div>
+
+    <h4 class="sub">Key Points to Remember</h4>
+    <ul>
+      <li>Extraction = local, per-document. Retrieval = global, per-collection.</li>
+      <li>Extraction produces the representation that retrieval later compares.</li>
+      <li>Most of this course's mathematics (pixels to histograms) is extraction; classic IR models handle retrieval.</li>
+    </ul>
+  </div>
+  <a class="top-link" href="#toc">&uarr; Back to Table of Contents</a>
+</section>
+<section class="chapter" id="ch2">
+  <div class="chap-label">Chapter 02</div>
+  <h2 class="chap-title">Data as Function, Object and Skeleton</h2>
+  <p class="chap-dek">Dr. Sagar's central organising idea: any piece of data can be looked at three ways — what it computes, what it contains, and what holds it together.</p>
+
+  <div class="topic" id="t2-1">
+    <h3 class="topic-title"><span class="topic-num">2.1</span>The Three Faces of Data</h3>
+
+    <h4 class="sub">Definition</h4>
+    <p>Any rectangular block of data (most importantly, a digital image) can be understood at three distinct levels:</p>
+    <ul>
+      <li><b>Function</b> — the data viewed as a mathematical function that assigns a value to every position (e.g. f(x,y) = z, giving a brightness value to every pixel location).</li>
+      <li><b>Object</b> — the data viewed as containing meaningful "things" (a letter, a face, a region of dense vegetation) that are distinguishable from the background.</li>
+      <li><b>Skeleton</b> — the data viewed as a thin, simplified core structure that preserves the shape/topology of an object while discarding its bulk (e.g. reducing a thick handwritten stroke to a one-pixel-wide centreline).</li>
+    </ul>
+
+    <h4 class="sub">Why This Concept Is Needed</h4>
+    <p>Different tasks in document image analysis, pattern recognition and IR need different "views" of the same
+    data. If you want to compute brightness statistics, you need the <em>function</em> view. If you want to know
+    "is there a car in this photo," you need the <em>object</em> view. If you want to recognise a handwritten
+    character regardless of pen thickness, you need the <em>skeleton</em> view. Confusing these three levels is
+    the single biggest source of confusion when a professor jumps between image processing, pattern recognition
+    and mathematical morphology in one breath — he is simply switching which of the three views he is discussing.</p>
+
+    <h4 class="sub">Real-life Intuition</h4>
+    <p>Think of a human hand. As a <b>function</b>, it is a continuous surface of skin with varying height at every
+    point (like a topographic map of the palm). As an <b>object</b>, it is "a hand" — a single recognisable unit,
+    distinct from the arm, the table, the background. As a <b>skeleton</b>, it is the stick-figure your brain
+    draws when it thinks of "hand shape" — one line per finger, meeting at a palm point, with all thickness
+    removed. Three views, one hand.</p>
+
+    <h4 class="sub">Simple Explanation</h4>
+    <p>Function = "what number lives at each spot." Object = "what thing is at this spot." Skeleton = "what is the
+    thinnest possible sketch that still shows the shape." You will use all three constantly: the function view to
+    do maths on the image, the object view to recognise or segment it, and the skeleton view to compress a shape
+    down to its essential structure for matching or recognition.</p>
+
+    <h4 class="sub">Technical Explanation</h4>
+    <p>In document image analysis, a scanned page is first captured as a <em>function</em> f(x,y) (raw pixel
+    intensities — Chapter 5). Thresholding and segmentation convert regions of that function into <em>objects</em>
+    (connected components — candidate characters, words, or images on the page). Skeletonisation (a mathematical
+    morphology operation) then thins each object to a <em>skeleton</em> — a topology-preserving, one-pixel-wide
+    representation used for stroke analysis, character recognition, and matching, because it removes irrelevant
+    thickness/stroke-width variation while keeping the shape that actually distinguishes one letter from another.</p>
+
+    <div class="diagram">
+      <svg viewBox="0 0 720 220" xmlns="http://www.w3.org/2000/svg">
+        <style>.b{font-family:sans-serif;font-size:12.5px;fill:#1B2A2E;} .cap2{font-family:monospace;font-size:11px;fill:#3D5A80;}</style>
+        <text x="90" y="24" text-anchor="middle" class="b" font-weight="bold">Function</text>
+        <rect x="20" y="34" width="140" height="110" fill="url(#g1)" stroke="#2F6F62"/>
+        <defs>
+          <linearGradient id="g1" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#1B2A2E"/>
+            <stop offset="0.5" stop-color="#3D5A80"/>
+            <stop offset="1" stop-color="#F4E9D8"/>
+          </linearGradient>
+        </defs>
+        <text x="90" y="160" text-anchor="middle" class="cap2">f(x,y) = brightness</text>
+
+        <text x="360" y="24" text-anchor="middle" class="b" font-weight="bold">Object</text>
+        <rect x="290" y="34" width="140" height="110" fill="#F3EFE4" stroke="#2F6F62"/>
+        <circle cx="360" cy="89" r="42" fill="#2F6F62"/>
+        <text x="360" y="160" text-anchor="middle" class="cap2">segmented region</text>
+
+        <text x="630" y="24" text-anchor="middle" class="b" font-weight="bold">Skeleton</text>
+        <rect x="560" y="34" width="140" height="110" fill="#F3EFE4" stroke="#2F6F62"/>
+        <path d="M600,50 L660,128 M600,128 L660,50" stroke="#C97B3D" stroke-width="3" fill="none" stroke-linecap="round"/>
+        <text x="630" y="160" text-anchor="middle" class="cap2">1-pixel-wide core</text>
+
+        <line x1="160" y1="89" x2="290" y2="89" stroke="#1B2A2E" stroke-dasharray="3 3"/>
+        <line x1="430" y1="89" x2="560" y2="89" stroke="#1B2A2E" stroke-dasharray="3 3"/>
+        <text x="360" y="200" text-anchor="middle" class="cap2">the same underlying shape, viewed three ways</text>
+      </svg>
+      <div class="cap">Fig 2.1 — The same visual data can be treated as a raw function, a recognised object, or a reduced skeleton, depending on the task.</div>
+    </div>
+
+    <h4 class="sub">Mathematical Explanation</h4>
+    <div class="formula-box">
+      <div class="formula">Data &rarr; { f(x,y) , O = {O<sub>1</sub>,...,O<sub>k</sub>} , S = skeleton(O) }</div>
+      <div class="legend">
+        <b>f(x,y)</b> — the function view: a value at every coordinate (see Chapter 5).<br>
+        <b>O = {O₁,...,Oₖ}</b> — the object view: the image broken into k distinguishable regions/objects.<br>
+        <b>S = skeleton(O)</b> — a thinning operator applied to an object, producing its topological "backbone."<br>
+        <b>Why it exists:</b> writing data this way makes explicit that "the image" isn't one fixed thing — it is
+        whichever representation is useful for the operation you are about to perform.
+      </div>
+    </div>
+
+    <h4 class="sub">Worked Example</h4>
+    <div class="worked">
+      <span class="wk-label">Example</span>
+      A scanned signature. As a <b>function</b>, it's a grid of grey values. After thresholding, the ink pixels
+      form one connected <b>object</b> against the white background. Skeletonising that object collapses every
+      thick pen-stroke to a single-pixel-wide curve — the <b>skeleton</b> — which is what a signature-verification
+      system actually compares, because it cares about stroke <em>shape</em>, not how thick the pen happened to be.
+    </div>
+
+    <table class="cmp">
+      <tr><th>View</th><th>Answers the question</th><th>Used for</th></tr>
+      <tr><td>Function</td><td>"What value is here?"</td><td>Filtering, enhancement, statistics, histograms</td></tr>
+      <tr><td>Object</td><td>"What thing is here?"</td><td>Segmentation, detection, classification</td></tr>
+      <tr><td>Skeleton</td><td>"What is this thing's essential shape?"</td><td>Character/shape recognition, matching, morphology</td></tr>
+    </table>
+
+    <div class="ir-box">
+      <h4 class="sub">Connection to Information Retrieval</h4>
+      <ul>
+        <li><b>OCR:</b> function &rarr; threshold &rarr; object (a candidate character) &rarr; skeleton (used for stroke-based recognition) &rarr; recognised text &rarr; now retrievable by keyword search.</li>
+        <li><b>Pattern Recognition:</b> skeletons are classic shape descriptors used to classify objects into categories.</li>
+        <li><b>Document Image Analysis:</b> the whole field is essentially the pipeline of moving data through these three views in order.</li>
+        <li><b>Multimedia Retrieval:</b> object-level and skeleton-level features are exactly the kind of compact representations that get indexed for image/video search.</li>
+      </ul>
+    </div>
+
+    <h4 class="sub">Common Interview / Exam Questions</h4>
+    <ul>
+      <li>Explain the function–object–skeleton hierarchy with a document image example.</li>
+      <li>Why is skeletonisation useful for character recognition but not for colour analysis?</li>
+    </ul>
+
+    <div class="mnemonic">Memory trick — "F-O-S, like Flesh, Outline, Skeleton": every image has flesh (values), an outline (objects), and a skeleton (thinned structure) — just like a body.</div>
+
+    <h4 class="sub">Key Points to Remember</h4>
+    <ul>
+      <li>Function, object and skeleton are three complementary views of the same underlying data, not three different datasets.</li>
+      <li>Choice of view depends on the task: measurement (function), detection (object), shape matching (skeleton).</li>
+      <li>Document image pipelines typically move Function &rarr; Object &rarr; Skeleton in that order.</li>
+    </ul>
+  </div>
+  <a class="top-link" href="#toc">&uarr; Back to Table of Contents</a>
+</section>
+<section class="chapter" id="ch3">
+  <div class="chap-label">Chapter 03</div>
+  <h2 class="chap-title">How Space Gets Organised: Packing and Granularity</h2>
+  <p class="chap-dek">Before we can talk about pixels, we need to understand how continuous space is cut into discrete pieces in the first place.</p>
+
+  <div class="topic" id="t3-1">
+    <h3 class="topic-title"><span class="topic-num">3.1</span>Delimiter Space Packing</h3>
+
+    <h4 class="sub">Definition</h4>
+    <p><b>Delimiter Space Packing</b> refers to the idea of dividing a continuous space (a page, a photograph, a
+    geographic area) into discrete, non-overlapping units by inserting <b>delimiters</b> — boundary markers that say
+    "this unit ends here, the next one starts." "Packing" means these units are laid out to completely fill the
+    space with no gaps and no overlaps.</p>
+
+    <h4 class="sub">Why This Concept Is Needed</h4>
+    <p>A digital device cannot store or process a truly continuous signal (infinite precision, infinite points).
+    It must break continuous space into a finite number of manageable, addressable chunks. Before we can even
+    define "a pixel," we first need the more general idea that any continuous space can be <em>packed</em> using
+    <em>delimiters</em> into countable, indexable units — this is the conceptual ancestor of the pixel grid.</p>
+
+    <h4 class="sub">Real-life Intuition</h4>
+    <p>Think of a chocolate bar. It's a single continuous rectangle, but it has grooves — delimiters — pressed into
+    it that mark where each small square begins and ends. You can now refer to "the third square from the left" even
+    though, physically, the chocolate is one connected piece. The grooves don't change the chocolate; they change
+    how you can <em>address</em> it. Delimiter space packing does the same thing to an image plane or a page: it
+    lays an invisible grid of "grooves" so every location can be named and processed individually.</p>
+
+    <h4 class="sub">Simple Explanation</h4>
+    <p>Take a blank rectangle. Draw lines across it, edge to edge, both horizontally and vertically, with no gaps
+    between the lines and no overlaps. Each little box formed by the lines is one "packed" unit; the lines
+    themselves are the delimiters. This is exactly what happens, conceptually, right before a scanner or camera
+    turns light falling on a page into a grid of numbers.</p>
+
+    <h4 class="sub">Technical Explanation</h4>
+    <p>Formally, delimiter space packing takes a continuous 2-D region R and partitions it into a set of cells
+    {C₁, C₂, ..., Cₙ} such that: (a) the union of all cells equals R (complete coverage — packing), and (b) no
+    two cells share interior area (non-overlap — enforced by the delimiters). This is the discretisation step that
+    must happen before "space" can be represented as data at all. It applies not only to images but to any
+    domain that needs to chop continuous extent into discrete, addressable records — this is why the same idea
+    resurfaces in spatial/geographic data models, not just in pixel grids.</p>
+
+    <div class="diagram">
+      <svg viewBox="0 0 420 220" xmlns="http://www.w3.org/2000/svg">
+        <style>.b{font-family:sans-serif;font-size:12px;fill:#1B2A2E;}</style>
+        <text x="90" y="20" text-anchor="middle" class="b" font-weight="bold">Before</text>
+        <rect x="20" y="30" width="140" height="140" fill="#F3EFE4" stroke="#2F6F62" stroke-width="2"/>
+        <text x="90" y="185" text-anchor="middle" class="b">continuous space</text>
+
+        <text x="330" y="20" text-anchor="middle" class="b" font-weight="bold">After (packed)</text>
+        <g stroke="#C97B3D" stroke-width="1.4" fill="none">
+          <rect x="260" y="30" width="140" height="140"/>
+          <line x1="295" y1="30" x2="295" y2="170"/>
+          <line x1="330" y1="30" x2="330" y2="170"/>
+          <line x1="365" y1="30" x2="365" y2="170"/>
+          <line x1="260" y1="65" x2="400" y2="65"/>
+          <line x1="260" y1="100" x2="400" y2="100"/>
+          <line x1="260" y1="135" x2="400" y2="135"/>
+        </g>
+        <text x="330" y="185" text-anchor="middle" class="b">delimiters carve out cells</text>
+
+        <path d="M170,100 L250,100" stroke="#1B2A2E" stroke-width="2" marker-end="url(#arr1)"/>
+      </svg>
+      <div class="cap">Fig 3.1 — Delimiters are inserted so continuous space becomes a packed set of addressable cells.</div>
+    </div>
+
+    <h4 class="sub">Mathematical Explanation</h4>
+    <div class="formula-box">
+      <div class="formula">R = C<sub>1</sub> &cup; C<sub>2</sub> &cup; ... &cup; C<sub>n</sub>,  &nbsp; C<sub>i</sub> &cap; C<sub>j</sub> = &empty; for i &ne; j</div>
+      <div class="legend">
+        <b>R</b> — the original continuous region (a page, a scene).<br>
+        <b>C₁...Cₙ</b> — the packed cells produced by inserting delimiters.<br>
+        <b>&cup; (union)</b> — every point of R is covered by some cell (nothing is left undefined).<br>
+        <b>&cap; = &empty; (empty intersection)</b> — no two cells overlap; every point belongs to exactly one cell.<br>
+        <b>Why it exists:</b> this pair of conditions is precisely what "packing" means in mathematics — full
+        coverage with zero overlap — and it is the property that lets us later index cells with simple integer
+        coordinates (Chapter 5).
+      </div>
+    </div>
+
+    <h4 class="sub">Worked Example</h4>
+    <div class="worked">
+      <span class="wk-label">Example</span>
+      A 3 cm &times; 3 cm patch of a photograph is packed using delimiters spaced 1 cm apart in both directions.
+      This produces 3 &times; 3 = 9 cells, each addressable as (row, column). No point in the original patch is
+      left out, and no two cells share area — exactly the packing condition above. This 3&times;3 grid of cells
+      is a miniature version of what becomes a pixel grid once each cell is assigned one intensity value.
+    </div>
+
+    <div class="ir-box">
+      <h4 class="sub">Connection to Information Retrieval</h4>
+      <ul>
+        <li><b>Document Image Analysis:</b> a scanned page must be packed into a pixel grid before any indexing/OCR can occur.</li>
+        <li><b>Digital Libraries:</b> tiling large images (e.g. manuscripts) into packed cells enables efficient storage and progressive loading during retrieval.</li>
+        <li><b>Multimedia Retrieval:</b> spatial indexing structures (grids, quad-trees) used to retrieve regions of large images rely on this same packing idea.</li>
+      </ul>
+    </div>
+
+    <h4 class="sub">Common Interview / Exam Questions</h4>
+    <ul>
+      <li>What two conditions must a "packing" of space satisfy?</li>
+      <li>Why must continuous image space be discretised before computational processing?</li>
+    </ul>
+
+    <div class="mnemonic">Memory trick — "Pack like tiles, not like puddles": tiles cover a floor with no gaps and no overlaps; puddles overlap and leave gaps. A proper packing behaves like tiles.</div>
+
+    <h4 class="sub">Key Points to Remember</h4>
+    <ul>
+      <li>Delimiters are the boundary markers; packing is the resulting gap-free, overlap-free tiling.</li>
+      <li>This is the conceptual step before pixels: turning continuous space into countable cells.</li>
+    </ul>
+  </div>
+
+  <div class="topic" id="t3-2">
+    <h3 class="topic-title"><span class="topic-num">3.2</span>Rectangular Granular Space</h3>
+
+    <h4 class="sub">Definition</h4>
+    <p>A <b>Rectangular Granular Space</b> is the specific (and by far most common) case of delimiter space packing
+    where every cell (every "granule") is a rectangle — usually a square — and all granules are arranged in
+    uniform rows and columns. "Granular" emphasises that the space is treated as made of small, uniform grains
+    rather than as one smooth continuum.</p>
+
+    <h4 class="sub">Why This Concept Is Needed</h4>
+    <p>Packing (Section 3.1) tells us space <em>can</em> be divided into cells; it doesn't say what shape those
+    cells should be. Rectangles are chosen almost universally in digital imaging because they tile a plane
+    perfectly with no gaps, they align naturally with row/column memory storage in a computer, and they make
+    coordinate arithmetic (addition, distance, indexing) trivially simple compared to, say, hexagonal or
+    irregular cells.</p>
+
+    <h4 class="sub">Real-life Intuition</h4>
+    <p>A rectangular granular space is like a chess board or a spreadsheet: every cell is the same rectangular
+    shape, arranged in tidy rows and columns, so "cell (3, 5)" is unambiguous and easy to compute. Compare this to
+    a jigsaw puzzle, where pieces are irregular and there's no simple formula for "the piece two positions to the
+    right" — a rectangular grid avoids exactly that problem.</p>
+
+    <h4 class="sub">Simple Explanation</h4>
+    <p>Every digital image you have ever seen is a rectangular granular space: a grid of tiny square cells (pixels),
+    each holding one value, arranged in evenly spaced rows and columns.</p>
+
+    <h4 class="sub">Technical Explanation</h4>
+    <p>A rectangular granular space is defined by a fixed cell width and height, and two integer indices per cell:
+    a row index and a column index. Because every granule is congruent (identical in shape and size) and axis
+    aligned, this structure supports constant-time addressing: given (row, column), the cell's location can be
+    computed directly by multiplication, with no search required. This is exactly the coordinate system used for
+    every digital image, satellite raster, and scanned document page.</p>
+
+    <div class="diagram">
+      <svg viewBox="0 0 300 260" xmlns="http://www.w3.org/2000/svg">
+        <style>.b{font-family:sans-serif;font-size:11px;fill:#1B2A2E;} .axis{font-family:monospace;font-size:11px;fill:#3D5A80;}</style>
+        <text x="150" y="18" text-anchor="middle" class="b" font-weight="bold">Rectangular Granular Space</text>
+        <g stroke="#B9AE96" stroke-width="1">
+          <line x1="40" y1="40" x2="40" y2="220"/><line x1="80" y1="40" x2="80" y2="220"/>
+          <line x1="120" y1="40" x2="120" y2="220"/><line x1="160" y1="40" x2="160" y2="220"/>
+          <line x1="200" y1="40" x2="200" y2="220"/><line x1="240" y1="40" x2="240" y2="220"/>
+          <line x1="40" y1="40" x2="240" y2="40"/><line x1="40" y1="80" x2="240" y2="80"/>
+          <line x1="40" y1="120" x2="240" y2="120"/><line x1="40" y1="160" x2="240" y2="160"/>
+          <line x1="40" y1="200" x2="240" y2="200"/><line x1="40" y1="220" x2="240" y2="220"/>
+        </g>
+        <rect x="120" y="80" width="40" height="40" fill="#2F6F62" opacity="0.7"/>
+        <text x="140" y="104" text-anchor="middle" fill="#fff" font-size="10" font-family="monospace">(1,2)</text>
+        <text x="140" y="238" text-anchor="middle" class="axis">columns &rarr;</text>
+        <text x="20" y="130" text-anchor="middle" class="axis" transform="rotate(-90 20 130)">rows &rarr;</text>
+      </svg>
+      <div class="cap">Fig 3.2 — Every granule is an identical rectangle; any cell is addressed simply as (row, column).</div>
+    </div>
+
+    <h4 class="sub">Mathematical Explanation</h4>
+    <div class="formula-box">
+      <div class="formula">Cell(r, c) = [r&middot;w, (r+1)&middot;w] &times; [c&middot;h, (c+1)&middot;h]</div>
+      <div class="legend">
+        <b>r, c</b> — the row and column index of a granule (whole numbers: 0, 1, 2, ...).<br>
+        <b>w, h</b> — the fixed width and height of every granule.<br>
+        <b>[r&middot;w, (r+1)&middot;w]</b> — the horizontal extent of granule (r,c); every granule has exactly
+        the same extent, just shifted.<br>
+        <b>Why it exists:</b> this formula shows that once you know (r, c), the granule's exact location follows
+        from simple multiplication — no lookup table, no search. That efficiency is the entire reason rectangular
+        grids dominate digital imaging.
+      </div>
+    </div>
+
+    <h4 class="sub">Worked Example</h4>
+    <div class="worked">
+      <span class="wk-label">Example</span>
+      A granule width/height of w = h = 1 unit. Granule (r=2, c=3) occupies the rectangle
+      [2,3] &times; [3,4]. To find granule (5, 0), you don't need to search anything — you simply compute
+      [5,6] &times; [0,1]. This constant-time addressing is exactly what lets a 10-million-pixel photograph be
+      accessed instantly at any location.
+    </div>
+
+    <table class="cmp">
+      <tr><th>Property</th><th>Delimiter Space Packing (general)</th><th>Rectangular Granular Space (special case)</th></tr>
+      <tr><td>Cell shape</td><td>Any shape, as long as it tiles</td><td>Always rectangle/square</td></tr>
+      <tr><td>Addressing</td><td>May need custom indexing</td><td>Simple (row, column) arithmetic</td></tr>
+      <tr><td>Used for</td><td>General spatial partitioning theory</td><td>Every practical digital image / raster</td></tr>
+    </table>
+
+    <div class="ir-box">
+      <h4 class="sub">Connection to Information Retrieval</h4>
+      <ul>
+        <li><b>Digital Libraries / Image Retrieval:</b> raster images stored as rectangular grids allow region-based indexing (search by image tile) and fast random access needed for retrieval systems.</li>
+        <li><b>OCR:</b> pixel-grid rectangular addressing is the substrate on which every later text-extraction operation runs.</li>
+        <li><b>Pattern Recognition:</b> features are almost always computed over rectangular sub-windows of an image precisely because the addressing is so simple.</li>
+      </ul>
+    </div>
+
+    <h4 class="sub">Common Interview / Exam Questions</h4>
+    <ul>
+      <li>Why are rectangular (rather than hexagonal or irregular) cells used almost universally in digital imaging?</li>
+      <li>Give the formula for locating a granule given its row and column index.</li>
+    </ul>
+
+    <div class="mnemonic">Memory trick — "Granular = Grid-like": both words start with "gr" — a granular space is a grid of identical little rectangles.</div>
+
+    <h4 class="sub">Key Points to Remember</h4>
+    <ul>
+      <li>Rectangular granular space is delimiter space packing specialised to identical rectangular cells in rows/columns.</li>
+      <li>It enables constant-time, formula-based addressing — the foundation for the pixel grid in Chapter 5.</li>
+    </ul>
+  </div>
+  <a class="top-link" href="#toc">&uarr; Back to Table of Contents</a>
+</section>
+<section class="chapter" id="ch4">
+  <div class="chap-label">Chapter 04</div>
+  <h2 class="chap-title">The Geographical Topography Analogy</h2>
+  <p class="chap-dek">The single mental model that will make every later chapter — thresholds, histograms, peaks, valleys — click into place instantly.</p>
+
+  <div class="topic" id="t4-1">
+    <h3 class="topic-title"><span class="topic-num">4.1</span>An Image Is a Landscape</h3>
+
+    <h4 class="sub">Definition</h4>
+    <p>The <b>Geographical Topography Analogy</b> treats a grayscale image exactly like a physical terrain map:
+    each pixel's (x, y) location is like a point on a map, and its intensity value is like the <em>elevation</em>
+    at that point. Bright pixels are "high ground" (mountains/peaks); dark pixels are "low ground" (valleys/basins).
+    An entire image becomes a 3-D landscape once you plot intensity as height.</p>
+
+    <h4 class="sub">Why This Concept Is Needed</h4>
+    <p>Human intuition for terrain — peaks, valleys, ridgelines, sea level — is extremely well developed (everyone
+    understands mountains and rivers) but intuition for "arrays of grey numbers" is not. By mapping every image
+    concept onto a landscape concept, abstract operations (thresholding, histogram peaks, mathematical morphology)
+    become physically visualisable rather than purely symbolic. This is precisely why Dr. Sagar — whose research
+    area explicitly includes mathematical morphology and geographic topography — introduces it early: it is the
+    single bridge connecting document image analysis to geographic information science.</p>
+
+    <h4 class="sub">Real-life Intuition</h4>
+    <p>Imagine flying over a mountain range at night with a heat-sensitive camera that shows height as brightness:
+    the tallest peaks glow brightest, the deepest valleys stay darkest. That glowing image <em>is</em> a grayscale
+    image, and the mountain range beneath it <em>is</em> its topography. Reading a grayscale photo of anything —
+    a face, a page of text, a satellite photo — the same way you'd read that glowing mountain photo is the whole
+    trick.</p>
+
+    <h4 class="sub">Simple Explanation</h4>
+    <p>Wherever the image is bright, imagine a hill. Wherever it's dark, imagine a valley. A histogram (Chapter 7)
+    is just a way of counting "how much land exists at each elevation" without needing to look at the whole map —
+    exactly like a geographer summarising a mountain range by how much area lies at each altitude band.</p>
+
+    <h4 class="sub">Technical Explanation</h4>
+    <p>Formally, we lift a 2-D image f(x,y) into a 3-D surface by treating intensity as height:
+    the surface is the set of points (x, y, f(x,y)). Ridges of this surface correspond to bright, connected
+    structures (e.g., a bright object's edge); basins correspond to dark, connected regions (e.g., ink on a page,
+    or shadowed regions). Segmenting an image into "object" and "background" (Chapter 6, thresholding) becomes
+    equivalent to choosing a "sea level" and asking which land is above it (foreground) and which is submerged
+    (background) — exactly the geomorphological operation of flooding a terrain to a chosen elevation.</p>
+
+    <div class="diagram">
+      <svg viewBox="0 0 620 220" xmlns="http://www.w3.org/2000/svg">
+        <style>.b{font-family:sans-serif;font-size:12.5px;fill:#1B2A2E;}</style>
+        <text x="310" y="20" text-anchor="middle" class="b" font-weight="bold">Image intensity read as elevation</text>
+        <polyline points="20,180 60,140 100,160 140,90 180,120 220,60 260,110 300,150 340,80 380,130 420,170 460,100 500,140 540,175 580,150"
+          fill="none" stroke="#2F6F62" stroke-width="2.5"/>
+        <path d="M20,180 60,140 100,160 140,90 180,120 220,60 260,110 300,150 340,80 380,130 420,170 460,100 500,140 540,175 580,150 580,200 20,200 Z"
+          fill="#D8D2C4" opacity="0.5"/>
+        <line x1="20" y1="150" x2="580" y2="150" stroke="#C97B3D" stroke-width="1.5" stroke-dasharray="5 4"/>
+        <text x="590" y="153" class="b" fill="#C97B3D" font-size="11">sea level (threshold)</text>
+        <text x="220" y="45" class="b" fill="#2F6F62" font-weight="bold">peak</text>
+        <text x="460" y="200" class="b" fill="#3D5A80" font-weight="bold">valley</text>
+      </svg>
+      <div class="cap">Fig 4.1 — Brightness plotted as height: peaks are bright regions, valleys are dark regions, and a threshold is literally a chosen "sea level."</div>
+    </div>
+
+    <h4 class="sub">Mathematical Explanation</h4>
+    <div class="formula-box">
+      <div class="formula">Surface = {(x, y, z) : z = f(x,y)}</div>
+      <div class="legend">
+        <b>x, y</b> — horizontal position on the map/image (Chapter 5).<br>
+        <b>z = f(x,y)</b> — elevation at that position, which for an image is simply pixel intensity.<br>
+        <b>Why it exists:</b> writing the image this way makes it literally a terrain surface, so every geographic
+        concept (contour lines, peaks, watershed) has a direct, ready-made translation into image processing.
+      </div>
+    </div>
+
+    <h4 class="sub">Worked Example</h4>
+    <div class="worked">
+      <span class="wk-label">Example</span>
+      A scanned page of dark text on a white background: white paper = high elevation (bright = high intensity),
+      black ink = low elevation. Choosing a threshold to separate text from paper (Chapter 6) is the same act as
+      a geographer choosing a "flood level" that submerges the ink valleys while leaving the paper peaks dry —
+      the flooded (submerged) area becomes the "text" mask.
+    </div>
+
+    <div class="ir-box">
+      <h4 class="sub">Connection to Information Retrieval</h4>
+      <ul>
+        <li><b>Document Image Analysis:</b> the topography view underlies watershed segmentation, a classic method for separating touching characters or objects.</li>
+        <li><b>Geographic Information Science:</b> the same mathematical-morphology machinery (used in ISI's own GIS elective) analyses real terrain, satellite imagery, and digital elevation models.</li>
+        <li><b>Image Retrieval:</b> "peaks" and "valleys" of an image's histogram (not the pixel surface itself) are later used as compact features for indexing and comparing images.</li>
+      </ul>
+    </div>
+
+    <h4 class="sub">Common Interview / Exam Questions</h4>
+    <ul>
+      <li>Explain how a grayscale image can be interpreted as a topographic surface.</li>
+      <li>How does the topography analogy help explain image thresholding?</li>
+    </ul>
+
+    <div class="mnemonic">Memory trick — "Bright = high, dark = low, threshold = sea level." If you remember only this one sentence, the rest of the course's vocabulary (peaks, valleys, watershed) falls into place automatically.</div>
+
+    <h4 class="sub">Key Points to Remember</h4>
+    <ul>
+      <li>Intensity is treated as elevation; the 2-D image becomes a 3-D landscape.</li>
+      <li>Thresholding = choosing a sea level; histogram peaks/valleys = amount of "land" at each elevation.</li>
+      <li>This analogy is the reason mathematical morphology, GIS and document image analysis share so much mathematics.</li>
+    </ul>
+  </div>
+  <a class="top-link" href="#toc">&uarr; Back to Table of Contents</a>
+</section>
+<section class="chapter" id="ch5">
+  <div class="chap-label">Chapter 05</div>
+  <h2 class="chap-title">Pixels and the Digital Image</h2>
+  <p class="chap-dek">Now we zoom into a single granule of our rectangular grid and ask: what number actually lives inside it, and why?</p>
+
+  <div class="topic" id="t5-1">
+    <h3 class="topic-title"><span class="topic-num">5.1</span>Pixels</h3>
+    <h4 class="sub">Definition</h4>
+    <p>A <b>pixel</b> ("picture element") is the smallest addressable unit of a digital image — one granule of the
+    rectangular granular space from Chapter 3 — holding a single value that represents brightness (grayscale) or
+    colour at that location.</p>
+
+    <h4 class="sub">Why This Concept Is Needed</h4>
+    <p>A computer cannot store a continuous image (it would need infinite numbers for infinite points). The pixel
+    is the practical compromise: divide the image into finitely many cells and store one representative number per
+    cell. Every later operation — thresholding, histograms, filtering — operates on this grid of pixels, never on
+    the original continuous scene.</p>
+
+    <h4 class="sub">Real-life Intuition</h4>
+    <p>Think of a mosaic made of small coloured tiles. From far away it looks like a smooth picture, but up close
+    it's just a grid of individual tiles, each one flat, uniform colour. A digital image is a mosaic where the
+    "tiles" are pixels — each one a tiny, uniform square holding exactly one number.</p>
+
+    <h4 class="sub">Simple Explanation</h4>
+    <p>Zoom into any digital photo far enough and it turns blocky — those blocks are pixels. Each block cannot be
+    subdivided further; it is the atomic unit of the image.</p>
+
+    <h4 class="sub">Technical Explanation</h4>
+    <p>A digital image of size M &times; N contains M &times; N pixels, arranged in M rows and N columns (Chapter 3's
+    rectangular granular space with granule count fixed). Each pixel is indexed by an integer coordinate pair
+    (x, y) and stores one intensity value (grayscale) or a triplet of values (colour, e.g. Red/Green/Blue).</p>
+
+    <div class="diagram">
+      <svg viewBox="0 0 320 260" xmlns="http://www.w3.org/2000/svg">
+        <style>.b{font-family:sans-serif;font-size:11px;fill:#1B2A2E;} .val{font-family:monospace;font-size:10px;fill:#fff;}</style>
+        <text x="160" y="18" text-anchor="middle" class="b" font-weight="bold">A 5&times;5 Pixel Grid (values = grey levels)</text>
+        <!-- static hand-authored grid with sample values -->
+        <g font-family="monospace" font-size="10">
+        <rect x="30" y="35" width="40" height="40" fill="#101418"/><text x="50" y="59" text-anchor="middle" fill="#fff">10</text>
+        <rect x="70" y="35" width="40" height="40" fill="#3d4550"/><text x="90" y="59" text-anchor="middle" fill="#fff">60</text>
+        <rect x="110" y="35" width="40" height="40" fill="#6d7887"/><text x="130" y="59" text-anchor="middle" fill="#fff">110</text>
+        <rect x="150" y="35" width="40" height="40" fill="#9aa5b3"/><text x="170" y="59" text-anchor="middle" fill="#1B2A2E">150</text>
+        <rect x="190" y="35" width="40" height="40" fill="#e8e3d8"/><text x="210" y="59" text-anchor="middle" fill="#1B2A2E">230</text>
+
+        <rect x="30" y="75" width="40" height="40" fill="#2a3038"/><text x="50" y="99" text-anchor="middle" fill="#fff">40</text>
+        <rect x="70" y="75" width="40" height="40" fill="#59626e"/><text x="90" y="99" text-anchor="middle" fill="#fff">90</text>
+        <rect x="110" y="75" width="40" height="40" fill="#828d9b"/><text x="130" y="99" text-anchor="middle" fill="#1B2A2E">130</text>
+        <rect x="150" y="75" width="40" height="40" fill="#b5bfc9"/><text x="170" y="99" text-anchor="middle" fill="#1B2A2E">180</text>
+        <rect x="190" y="75" width="40" height="40" fill="#f4efe4"/><text x="210" y="99" text-anchor="middle" fill="#1B2A2E">250</text>
+
+        <rect x="30" y="115" width="40" height="40" fill="#181c22"/><text x="50" y="139" text-anchor="middle" fill="#fff">20</text>
+        <rect x="70" y="115" width="40" height="40" fill="#4a525c"/><text x="90" y="139" text-anchor="middle" fill="#fff">75</text>
+        <rect x="110" y="115" width="40" height="40" fill="#7c8794"/><text x="130" y="139" text-anchor="middle" fill="#1B2A2E">120</text>
+        <rect x="150" y="115" width="40" height="40" fill="#aab4bf"/><text x="170" y="139" text-anchor="middle" fill="#1B2A2E">170</text>
+        <rect x="190" y="115" width="40" height="40" fill="#eee9de"/><text x="210" y="139" text-anchor="middle" fill="#1B2A2E">240</text>
+        </g>
+        <text x="160" y="175" text-anchor="middle" class="b">Each cell = one pixel = one (x, y) location = one intensity value</text>
+        <text x="50" y="200" text-anchor="middle" class="b" fill="#1B2A2E">column &rarr;</text>
+        <text x="270" y="70" class="b">&larr; row</text>
+      </svg>
+      <div class="cap">Fig 5.1 — A tiny 5&times;5 image. Darker cells hold lower numbers (closer to 0); lighter cells hold higher numbers (closer to 255).</div>
+    </div>
+
+    <div class="callout tip"><b class="tag">Terminology check</b>Synonyms you may see for "pixel": picture element, image element, pel (older texts). All mean the same thing.</div>
+
+    <h4 class="sub">Applications</h4>
+    <ul><li>Every digital photo, scan, X-ray, or satellite image is fundamentally a grid of pixels.</li></ul>
+
+    <div class="ir-box">
+      <h4 class="sub">Connection to Information Retrieval</h4>
+      <ul><li><b>Image Retrieval:</b> pixels are the raw material from which every higher-level feature (histogram, edge, shape) used for search is eventually computed.</li>
+      <li><b>OCR:</b> characters are recognised only after being reconstructed from patterns of pixels.</li></ul>
+    </div>
+  </div>
+
+  <div class="topic" id="t5-2">
+    <h3 class="topic-title"><span class="topic-num">5.2</span>The Digital Image</h3>
+    <h4 class="sub">Definition</h4>
+    <p>A <b>digital image</b> is a finite, discrete, two-dimensional array of pixels — the complete rectangular
+    granular space (Chapter 3), fully populated with intensity values.</p>
+
+    <h4 class="sub">Why This Concept Is Needed</h4>
+    <p>"Pixel" describes one cell; "digital image" describes the whole array. We need the aggregate concept because
+    almost every operation in this course — histograms, thresholding, energy — is defined over the entire image,
+    not over a single pixel in isolation.</p>
+
+    <h4 class="sub">Real-life Intuition</h4>
+    <p>If a pixel is one tile in a mosaic, a digital image is the entire finished mosaic — the complete picture
+    made of all the tiles laid together.</p>
+
+    <h4 class="sub">Technical Explanation</h4>
+    <p>A digital image is formed by two processes applied to a continuous scene: <b>sampling</b> (deciding
+    <em>where</em> to measure — this fixes the M &times; N grid, i.e. Chapter 3's packing) and <b>quantisation</b>
+    (deciding <em>what values</em> are allowed at each sample — this fixes the 0–255 range discussed in Section 5.5).
+    Together, sampling + quantisation turn a continuous scene into a finite grid of finite-precision numbers: a
+    digital image.</p>
+
+    <table class="cmp">
+      <tr><th>Step</th><th>Question it answers</th><th>What it fixes</th></tr>
+      <tr><td>Sampling</td><td>Where do we measure?</td><td>Image resolution (M &times; N, rows &times; columns)</td></tr>
+      <tr><td>Quantisation</td><td>What values can a measurement take?</td><td>Intensity depth (e.g. 0–255, Section 5.6)</td></tr>
+    </table>
+
+    <div class="ir-box">
+      <h4 class="sub">Connection to Information Retrieval</h4>
+      <ul><li><b>Digital Libraries:</b> digitisation of manuscripts is exactly this sampling + quantisation process, producing the digital image objects that libraries then catalogue and make retrievable.</li></ul>
+    </div>
+  </div>
+
+  <div class="topic" id="t5-3">
+    <h3 class="topic-title"><span class="topic-num">5.3</span>The Function f(x,y) = z</h3>
+    <h4 class="sub">Definition</h4>
+    <p>A digital image is formally written as a function <b>f(x, y) = z</b>, meaning: at horizontal position x and
+    vertical position y, the image has intensity value z.</p>
+
+    <h4 class="sub">Why This Concept Is Needed</h4>
+    <p>Writing an image as a mathematical function (rather than just "a picture") is what allows us to apply the
+    entire toolbox of mathematics — sums, derivatives, transforms, statistics — to images. Every later formula in
+    this course (energy, histograms) is built directly on top of f(x,y).</p>
+
+    <h4 class="sub">Simple Explanation</h4>
+    <p>Think of f as a lookup rule: "tell me a location, I'll tell you the brightness there." That's all a function
+    is — a rule that takes inputs and produces one output.</p>
+
+    <h4 class="sub">Mathematical Explanation</h4>
+    <div class="formula-box">
+      <div class="formula">f(x, y) = z</div>
+      <div class="legend">
+        <b>x</b> — the column position (horizontal coordinate) of a pixel, an integer from 0 to N&minus;1.<br>
+        <b>y</b> — the row position (vertical coordinate) of a pixel, an integer from 0 to M&minus;1.<br>
+        <b>f</b> — the "image function," the rule that assigns a value to every (x, y) pair. It is called a
+        <em>function</em> because — exactly like f(x) = x&sup2; in ordinary algebra — every valid input (x,y) maps
+        to exactly one output; no location has two different brightness values at once.<br>
+        <b>z</b> — the output: the intensity (brightness) at location (x,y). For an 8-bit grayscale image,
+        z is an integer from 0 to 255 (Section 5.5–5.6).<br>
+        <b>Why the notation exists:</b> it lets us treat "the whole image" as a single mathematical object f,
+        instead of talking about millions of separate numbers individually — exactly as f(x) lets algebra talk
+        about a whole curve instead of listing every point on it.
+      </div>
+    </div>
+
+    <div class="diagram">
+      <svg viewBox="0 0 500 220" xmlns="http://www.w3.org/2000/svg">
+        <style>.b{font-family:sans-serif;font-size:12.5px;fill:#1B2A2E;} .ax{font-family:monospace;font-size:11px;fill:#3D5A80;}</style>
+        <line x1="60" y1="180" x2="440" y2="180" stroke="#1B2A2E" stroke-width="1.5"/>
+        <line x1="60" y1="180" x2="60" y2="20" stroke="#1B2A2E" stroke-width="1.5"/>
+        <text x="450" y="184" class="ax">x (column)</text>
+        <text x="20" y="20" class="ax">y (row)</text>
+        <rect x="220" y="90" width="40" height="40" fill="#C97B3D"/>
+        <line x1="60" y1="110" x2="220" y2="110" stroke="#3D5A80" stroke-dasharray="3 3"/>
+        <line x1="240" y1="180" x2="240" y2="110" stroke="#3D5A80" stroke-dasharray="3 3"/>
+        <text x="240" y="105" text-anchor="middle" class="b" font-weight="bold">f(x,y) = 200</text>
+        <text x="235" y="196" text-anchor="middle" class="ax">x = 5</text>
+        <text x="15" y="113" class="ax">y = 3</text>
+      </svg>
+      <div class="cap">Fig 5.2 — f(5,3) = 200 means: "at column 5, row 3, the brightness is 200."</div>
+    </div>
+
+    <h4 class="sub">Worked Example</h4>
+    <div class="worked">
+      <span class="wk-label">Example</span>
+      Given f(2,1) = 45, f(2,2) = 210, f(3,1) = 45: two different locations, (2,1) and (3,1), happen to share the
+      same brightness (45) — that's allowed; a function only forbids one input having two outputs, it never
+      forbids two inputs sharing one output.
+    </div>
+
+    <div class="ir-box">
+      <h4 class="sub">Connection to Information Retrieval</h4>
+      <ul><li><b>Multimedia Retrieval:</b> every image-based feature used for search (histograms, energy, edges) is computed as some aggregate function of f(x,y) — this notation is the universal starting point.</li></ul>
+    </div>
+
+    <h4 class="sub">Common Interview / Exam Questions</h4>
+    <ul><li>Why is a digital image represented as a mathematical function rather than as a mere "picture"?</li></ul>
+    <div class="mnemonic">Memory trick — "x across, y down, f finds, z is found": read f(x,y)=z left to right as a sentence.</div>
+  </div>
+
+  <div class="topic" id="t5-4">
+    <h3 class="topic-title"><span class="topic-num">5.4</span>Pixel Intensity</h3>
+    <h4 class="sub">Definition</h4>
+    <p><b>Pixel intensity</b> (also called grey level or grey value) is the numeric value z = f(x,y) stored at a
+    pixel, representing how bright or dark that point is.</p>
+
+    <h4 class="sub">Why This Concept Is Needed</h4>
+    <p>Intensity is the actual payload of an image — everything else (coordinates, grid structure) is just
+    "addressing." Without intensity values, the grid would be empty; intensity is what makes an image visually
+    meaningful.</p>
+
+    <h4 class="sub">Real-life Intuition</h4>
+    <p>Think of a dimmer switch on a light bulb: turning it fully down gives darkness (low intensity, near 0);
+    turning it fully up gives maximum brightness (high intensity, near 255). Every pixel has its own invisible
+    "dimmer switch" set to some value in that range.</p>
+
+    <h4 class="sub">Technical Explanation</h4>
+    <p>In grayscale imaging, intensity is a single number per pixel. In colour imaging, intensity is usually split
+    into three channels (Red, Green, Blue), each with its own 0–255 range, combined to produce the perceived
+    colour. This course, following the professor's treatment, focuses on the single-channel grayscale case, which
+    is also what underlies binary thresholding (Chapter 6).</p>
+
+    <div class="ir-box">
+      <h4 class="sub">Connection to Information Retrieval</h4>
+      <ul><li><b>Image Retrieval:</b> intensity distributions (histograms, Chapter 7) are among the oldest and simplest global features used to compare and retrieve images.</li></ul>
+    </div>
+    <div class="mnemonic">Memory trick — "Intensity is the answer, coordinates are the question": (x,y) asks "where," z answers "how bright."</div>
+  </div>
+
+  <div class="topic" id="t5-5">
+    <h3 class="topic-title"><span class="topic-num">5.5</span>Why Intensity Runs 0–255</h3>
+    <h4 class="sub">Definition</h4>
+    <p>In the most common digital imaging standard, intensity z is restricted to whole numbers from <b>0 to 255</b>
+    inclusive — 256 possible values — because each pixel's intensity is stored using exactly <b>8 bits</b> of
+    computer memory (Section 5.6).</p>
+
+    <h4 class="sub">Why This Concept Is Needed</h4>
+    <p>Students often think 0–255 is an arbitrary convention; it is actually a direct mathematical consequence of
+    how binary computer memory works, and understanding *why* removes a huge amount of confusion when later
+    reading about "8-bit images," "bit depth," or "256 gray levels" in any textbook or paper.</p>
+
+    <h4 class="sub">Real-life Intuition</h4>
+    <p>Imagine a row of 8 light switches, each either OFF (0) or ON (1). How many distinct on/off patterns can 8
+    switches make? Each switch doubles the number of possible patterns compared to one fewer switch. With 1 switch:
+    2 patterns. With 2 switches: 4 patterns. With 8 switches: 2 multiplied by itself 8 times. That count — 256 — is
+    exactly how many distinct grey levels 8 bits can represent.</p>
+
+    <h4 class="sub">Simple Explanation</h4>
+    <p>Computers store everything in <b>bits</b> — units that can only be 0 or 1. To store a brightness value, we
+    need to decide how many bits to spend per pixel. Spending 8 bits per pixel is the historical/practical
+    standard (matches one computer "byte" exactly), and 8 bits can count from 0 up to 255 — no further, no less.</p>
+
+    <h4 class="sub">Mathematical Explanation</h4>
+    <div class="formula-box">
+      <div class="formula">Number of levels = 2<sup>bits</sup> = 2<sup>8</sup> = 256 &nbsp;&rArr;&nbsp; values range 0 to 255</div>
+      <div class="legend">
+        <b>2</b> — because a bit has exactly 2 possible states (0 or 1).<br>
+        <b>bits (the exponent)</b> — the number of bits allotted per pixel; here, 8.<br>
+        <b>2<sup>8</sup></b> — the total count of distinct patterns 8 bits can form: 2&times;2&times;2&times;2&times;2&times;2&times;2&times;2 = 256.<br>
+        <b>Why range is 0–255, not 1–256:</b> computer counting starts at 0, so 256 possible values are labelled
+        0, 1, 2, ..., 255 — the 256th value is labelled 255, not 256.<br>
+        <b>Why it exists:</b> this formula is simply "how many things can you count with n binary digits" — the
+        same rule that governs any binary storage, not just images.
+      </div>
+    </div>
+
+    <div class="diagram">
+      <svg viewBox="0 0 560 130" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="gray" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stop-color="#000000"/><stop offset="1" stop-color="#ffffff"/>
+          </linearGradient>
+        </defs>
+        <rect x="20" y="30" width="520" height="40" fill="url(#gray)" stroke="#1B2A2E"/>
+        <text x="20" y="90" font-family="monospace" font-size="12" fill="#1B2A2E">0</text>
+        <text x="270" y="90" font-family="monospace" font-size="12" fill="#1B2A2E" text-anchor="middle">128</text>
+        <text x="520" y="90" font-family="monospace" font-size="12" fill="#1B2A2E" text-anchor="end">255</text>
+        <text x="280" y="20" font-family="sans-serif" font-size="13" fill="#1B2A2E" text-anchor="middle" font-weight="bold">256 discrete grey levels (2&#8312;)</text>
+      </svg>
+      <div class="cap">Fig 5.3 — The full 8-bit greyscale ramp: 256 distinguishable steps from pure black (0) to pure white (255).</div>
+    </div>
+
+    <h4 class="sub">Worked Example</h4>
+    <div class="worked">
+      <span class="wk-label">Example</span>
+      With 1 bit per pixel: 2&sup1; = 2 levels — only pure black (0) or pure white (1); this is exactly a binary
+      image (Chapter 6). With 2 bits per pixel: 2&sup2; = 4 levels (0,1,2,3). With 8 bits: 2&#8312; = 256 levels
+      (0...255) — the everyday grayscale standard. Notice the pattern: each extra bit doubles the number of
+      available shades.
+    </div>
+
+    <table class="cmp">
+      <tr><th>Bits per pixel</th><th>Formula</th><th>Number of grey levels</th><th>Example use</th></tr>
+      <tr><td>1</td><td>2&sup1;</td><td>2</td><td>Binary (black/white) image</td></tr>
+      <tr><td>4</td><td>2&#8308;</td><td>16</td><td>Old low-colour displays</td></tr>
+      <tr><td>8</td><td>2&#8312;</td><td>256</td><td>Standard grayscale image</td></tr>
+      <tr><td>16</td><td>2&#185;&#8310;</td><td>65,536</td><td>Medical/scientific high-precision imaging</td></tr>
+    </table>
+
+    <div class="ir-box">
+      <h4 class="sub">Connection to Information Retrieval</h4>
+      <ul><li><b>Image Retrieval:</b> the number of grey levels directly determines histogram resolution (Chapter 7) — a coarser bit depth means a coarser, less discriminative feature for retrieval.</li>
+      <li><b>OCR:</b> 8-bit grayscale is typically the working depth before thresholding down to 1-bit binary for character segmentation.</li></ul>
+    </div>
+
+    <h4 class="sub">Common Interview / Exam Questions</h4>
+    <ul>
+      <li>Derive why an 8-bit image has exactly 256 possible intensity values.</li>
+      <li>How many grey levels are possible with 4 bits per pixel? With 10 bits?</li>
+    </ul>
+    <div class="mnemonic">Memory trick — "n switches, 2&#8319; patterns": every extra bit doubles your palette.</div>
+  </div>
+
+  <div class="topic" id="t5-6">
+    <h3 class="topic-title"><span class="topic-num">5.6</span>8-bit Images</h3>
+    <h4 class="sub">Definition</h4>
+    <p>An <b>8-bit image</b> is a digital image in which every pixel's intensity is stored using 8 bits (1 byte),
+    giving 256 possible grey levels (0–255), as derived in Section 5.5.</p>
+
+    <h4 class="sub">Why This Concept Is Needed</h4>
+    <p>8-bit depth is the de facto standard for grayscale images (and for each colour channel in 24-bit colour
+    images) because 1 byte = 8 bits is the most natural, efficient unit of computer memory, and 256 shades is more
+    than enough for human vision to perceive as smooth, continuous-looking tone.</p>
+
+    <h4 class="sub">Real-life Intuition</h4>
+    <p>Photograph a black-and-white gradient print with a scanner set to 8-bit depth: the human eye typically
+    cannot distinguish more than about 200–300 shades of grey anyway, so 256 levels look perfectly smooth — going
+    to 16-bit depth mostly matters for later mathematical processing (e.g. medical scans), not for direct viewing.</p>
+
+    <h4 class="sub">Technical Explanation</h4>
+    <p>Storage cost: an 8-bit image of size M &times; N requires M &times; N bytes for its raw pixel data (before
+    compression). This is also why an 8-bit binary image (Chapter 6) — which really only needs 1 bit per pixel — is
+    still often stored "as" an 8-bit image in practice, using only the values 0 and 255, for compatibility with
+    standard image-processing software.</p>
+
+    <div class="ir-box">
+      <h4 class="sub">Connection to Information Retrieval</h4>
+      <ul><li><b>Digital Libraries:</b> storage/bandwidth planning for large digitised collections depends directly on bit depth &times; resolution — a core practical concern in digitisation projects (recall Paper 07: Digitisation, file formats).</li></ul>
+    </div>
+
+    <h4 class="sub">Common Interview / Exam Questions</h4>
+    <ul><li>How much raw storage does a 1000 &times; 1000 8-bit grayscale image require?</li></ul>
+    <div class="worked">
+      <span class="wk-label">Example</span>
+      1000 &times; 1000 = 1,000,000 pixels, each 1 byte (8 bits) &rArr; 1,000,000 bytes &asymp; 976.6 KB (&asymp; 0.95 MB) of raw, uncompressed storage.
+    </div>
+  </div>
+
+  <div class="grid2">
+    <div class="card">
+      <h5>Chapter 5 — Summary</h5>
+      <p style="margin:0;">A digital image is a rectangular grid of pixels; each pixel is addressed by (x,y) and
+      holds an intensity z = f(x,y). Because computers store data in bits, and 8 bits is the standard allotment
+      per pixel, intensity is quantised into 2&#8312; = 256 levels, labelled 0 to 255.</p>
+    </div>
+    <div class="card">
+      <h5>Further Reading</h5>
+      <ul style="margin:0;">
+        <li>Gonzalez &amp; Woods, <em>Digital Image Processing</em> — Ch. 2 (Digital Image Fundamentals)</li>
+        <li>Any introductory chapter on sampling and quantisation</li>
+      </ul>
+    </div>
+  </div>
+  <a class="top-link" href="#toc">&uarr; Back to Table of Contents</a>
+</section>
+<section class="chapter" id="ch6">
+  <div class="chap-label">Chapter 06</div>
+  <h2 class="chap-title">Binary Images, Thresholds and Energy</h2>
+  <p class="chap-dek">Turning a landscape of 256 elevations into a simple map of "land" and "sea" — and measuring how much land there is.</p>
+
+  <div class="topic" id="t6-1">
+    <h3 class="topic-title"><span class="topic-num">6.1</span>The Binary Image</h3>
+    <h4 class="sub">Definition</h4>
+    <p>A <b>binary image</b> is an image whose pixels can only take one of exactly two values — conventionally 0
+    (black) and 1 (or 255, white) — representing a hard decision of "background" versus "foreground/object" at
+    every pixel.</p>
+
+    <h4 class="sub">Why This Concept Is Needed</h4>
+    <p>Many tasks — separating text from paper, separating an object's silhouette from its background, preparing an
+    image for skeleton extraction (Chapter 2) — don't need 256 shades of grey; they need one yes/no decision per
+    pixel. Binary images strip away irrelevant shading detail and keep only the decision that matters:
+    "is this pixel part of the object or not?"</p>
+
+    <h4 class="sub">Real-life Intuition</h4>
+    <p>Think of a stencil used for spray-painting: every point on the stencil is either "cut out" (paint passes
+    through) or "solid" (paint is blocked) — there is no in-between shade. A binary image is the digital version of
+    a stencil: a hard, two-valued mask of an image.</p>
+
+    <h4 class="sub">Technical Explanation</h4>
+    <p>A binary image is produced from a grayscale image by thresholding (Section 6.2): every pixel above the
+    threshold becomes one value (e.g., 1/white), every pixel at or below it becomes the other (e.g., 0/black). In
+    the topography analogy (Chapter 4), this is exactly "flooding" the terrain to a chosen sea level and recording
+    only whether each point is submerged or dry.</p>
+
+    <div class="diagram">
+      <svg viewBox="0 0 500 170" xmlns="http://www.w3.org/2000/svg">
+        <style>.b{font-family:sans-serif;font-size:12px;fill:#1B2A2E;}</style>
+        <text x="120" y="18" text-anchor="middle" class="b" font-weight="bold">Grayscale</text>
+        <rect x="30" y="28" width="180" height="110" fill="#888" stroke="#1B2A2E"/>
+        <circle cx="120" cy="83" r="45" fill="#222"/>
+        <text x="380" y="18" text-anchor="middle" class="b" font-weight="bold">Binary (after threshold)</text>
+        <rect x="290" y="28" width="180" height="110" fill="#fff" stroke="#1B2A2E"/>
+        <circle cx="380" cy="83" r="45" fill="#000"/>
+        <path d="M215,83 L285,83" stroke="#C97B3D" stroke-width="2" marker-end="url(#arr1)"/>
+      </svg>
+      <div class="cap">Fig 6.1 — Thresholding collapses many shades of grey into just two values: object (black circle) vs. background (white).</div>
+    </div>
+
+    <div class="ir-box">
+      <h4 class="sub">Connection to Information Retrieval</h4>
+      <ul><li><b>OCR:</b> binarisation is almost always the very first step, isolating ink pixels from paper pixels before character segmentation.</li>
+      <li><b>Document Image Analysis:</b> binary masks are the direct input to skeletonisation and object extraction.</li></ul>
+    </div>
+  </div>
+
+  <div class="topic" id="t6-2">
+    <h3 class="topic-title"><span class="topic-num">6.2</span>Threshold and f<sup>T</sup>(x,y)</h3>
+    <h4 class="sub">Definition</h4>
+    <p>A <b>threshold</b> T is a chosen cut-off intensity value. <b>f<sup>T</sup>(x,y)</b> denotes the
+    <em>thresholded (binarised) image</em>: the result of applying that cut-off to every pixel of the original
+    image f(x,y).</p>
+
+    <h4 class="sub">Why This Concept Is Needed</h4>
+    <p>We need a precise rule — not a vague one — for turning grayscale into binary. The threshold T is that rule's
+    only parameter: pick one number, and every pixel's fate (object or background) is decided automatically by
+    comparing it to T.</p>
+
+    <h4 class="sub">Real-life Intuition</h4>
+    <p>A threshold is like a passing mark on an exam: score above it, you "pass" (become foreground/white); score at
+    or below it, you "fail" (become background/black). One single number decides the fate of every student
+    (pixel), no matter how many students there are.</p>
+
+    <h4 class="sub">Mathematical Explanation</h4>
+    <div class="formula-box">
+      <div class="formula">f<sup>T</sup>(x,y) = 1 if f(x,y) &gt; T,  &nbsp; else 0</div>
+      <div class="legend">
+        <b>f(x,y)</b> — the original grayscale intensity at (x,y), a value 0–255.<br>
+        <b>T</b> — the threshold: one chosen number, also between 0 and 255.<br>
+        <b>f<sup>T</sup>(x,y)</b> — the output binary image: 1 (foreground/white) if the original pixel was brighter
+        than T, and 0 (background/black) otherwise.<br>
+        <b>Why it exists:</b> this is the simplest possible rule that turns a continuum of 256 values into a
+        strict two-way decision, using only one number (T) that can be tuned per image.
+      </div>
+    </div>
+
+    <h4 class="sub">Worked Example</h4>
+    <div class="worked">
+      <span class="wk-label">Example</span>
+      Suppose T = 128. A pixel with f(x,y) = 200 &gt; 128, so f<sup>T</sup>(x,y) = 1 (foreground). A pixel with
+      f(x,y) = 90 &le; 128, so f<sup>T</sup>(x,y) = 0 (background). Changing T to 50 would reclassify that same
+      90-value pixel as foreground instead — this is why <em>choosing</em> the right T (Chapter 7.5) matters so much.
+    </div>
+
+    <div class="callout warn"><b class="tag">Common confusion</b>Threshold is a single scalar number (like 128), not
+    an image. f<sup>T</sup>(x,y) is the resulting binary <em>image</em> after that number has been applied everywhere.</div>
+
+    <div class="ir-box">
+      <h4 class="sub">Connection to Information Retrieval</h4>
+      <ul><li><b>OCR / Document Image Analysis:</b> a badly chosen T can merge text into background (too high) or
+      shatter it into speckled noise (too low) — directly affecting how well text can later be recognised and retrieved.</li></ul>
+    </div>
+
+    <h4 class="sub">Common Interview / Exam Questions</h4>
+    <ul><li>Write the mathematical definition of image thresholding.</li>
+    <li>What happens to a binary image's foreground area if the threshold T is increased?</li></ul>
+    <div class="mnemonic">Memory trick — "T for Tollgate": every pixel must pass through the tollgate at height T — clear it (brighter) and you're foreground, get stopped (darker or equal) and you're background.</div>
+  </div>
+
+  <div class="topic" id="t6-3">
+    <h3 class="topic-title"><span class="topic-num">6.3</span>Image Energy and &Sigma;f(x,y) = A</h3>
+    <h4 class="sub">Definition</h4>
+    <p><b>Image energy</b> (in this simple, foundational sense) is the sum of all pixel intensities (or, for a
+    binary image, the count of foreground pixels) across the whole image, written &Sigma;f(x,y) = A. It is a single
+    number that summarises "how much bright/foreground material" the whole image contains.</p>
+
+    <h4 class="sub">Why This Concept Is Needed</h4>
+    <p>Sometimes we don't need to know the shape or location of anything in an image — we just need a single
+    summary number, e.g., "how much ink is on this page," or "how much of this satellite tile is forest." Summing
+    every pixel's value gives exactly that in one shot, and it is the simplest possible "global feature" of an image.</p>
+
+    <h4 class="sub">Real-life Intuition</h4>
+    <p>Imagine weighing an entire basket of fruit rather than weighing each fruit separately and remembering every
+    individual number. The total weight is one useful summary number, even though it throws away information about
+    which fruit was heaviest. &Sigma;f(x,y) does the same thing for an image: it is the "total weight" of brightness.</p>
+
+    <h4 class="sub">Technical Explanation</h4>
+    <p>For a binary image, &Sigma;f(x,y) directly counts foreground pixels (since each contributes exactly 1),
+    giving the <em>area</em> A of the object — this is precisely why the symbol A (area) is used. For a grayscale
+    image, the same sum instead gives a rough measure of total "brightness energy," useful for quick global
+    comparisons (e.g., is this scan overall darker or lighter than that one), though it is coarser than a histogram
+    (Chapter 7), which preserves the full distribution rather than collapsing it to one number.</p>
+
+    <div class="formula-box">
+      <div class="formula">&Sigma;f(x,y) = A = &sum;<sub>x=0</sub><sup>N&minus;1</sup> &sum;<sub>y=0</sub><sup>M&minus;1</sup> f(x,y)</div>
+      <div class="legend">
+        <b>&Sigma; (sigma)</b> — the summation symbol: "add up everything that follows, over all listed values."<br>
+        <b>x, y</b> — every column and row index in the image, ranging across the whole grid (0 to N&minus;1, 0 to M&minus;1).<br>
+        <b>f(x,y)</b> — the value being summed: the intensity (grayscale) or 0/1 flag (binary) at each pixel.<br>
+        <b>A</b> — the resulting total: for a binary image, this equals the object's <em>area</em> in pixels; for a
+        grayscale image, it is the image's total intensity "energy."<br>
+        <b>Why it exists:</b> it is the most direct possible way to convert an entire 2-D grid of numbers into one
+        single, comparable statistic — the starting point for any global image measurement.
+      </div>
+    </div>
+
+    <h4 class="sub">Worked Example</h4>
+    <div class="worked">
+      <span class="wk-label">Example</span>
+      A tiny 3&times;3 binary image (1 = foreground):
+      <br><code>0 1 1</code><br><code>1 1 0</code><br><code>0 1 0</code>
+      <br>Summing all 9 values: 0+1+1+1+1+0+0+1+0 = 5. So A = 5: the foreground object covers exactly 5 pixels'
+      worth of area, out of the 9 pixels total.
+    </div>
+
+    <table class="cmp">
+      <tr><th>Image type</th><th>What &Sigma;f(x,y) measures</th></tr>
+      <tr><td>Binary</td><td>Area (pixel count) of the foreground object</td></tr>
+      <tr><td>Grayscale</td><td>Total brightness "energy" of the whole image</td></tr>
+    </table>
+
+    <div class="ir-box">
+      <h4 class="sub">Connection to Information Retrieval</h4>
+      <ul><li><b>Image Retrieval:</b> total foreground area (A) is one of the simplest global shape/size features used to filter or rank candidate images before more expensive comparison.</li>
+      <li><b>Pattern Recognition:</b> object area is a basic, cheap-to-compute feature often used alongside shape descriptors like the skeleton (Chapter 2).</li></ul>
+    </div>
+
+    <h4 class="sub">Common Interview / Exam Questions</h4>
+    <ul><li>What does &Sigma;f(x,y) represent for a binary image versus a grayscale image?</li></ul>
+    <div class="mnemonic">Memory trick — "&Sigma; = Sum = Scale-to-one-number." Whenever you see &Sigma;, think "the whole picture, boiled down to a single figure."</div>
+  </div>
+
+  <div class="grid2">
+    <div class="card">
+      <h5>Chapter 6 — Summary</h5>
+      <p style="margin:0;">Thresholding at a chosen value T converts a 256-level grayscale image f(x,y) into a
+      two-level binary image f<sup>T</sup>(x,y). Summing all pixel values, &Sigma;f(x,y) = A, then gives a single
+      global number: object area for binary images, or total brightness energy for grayscale images.</p>
+    </div>
+    <div class="card">
+      <h5>Exam Questions (Chapter Recap)</h5>
+      <ul style="margin:0;">
+        <li>Derive f<sup>T</sup>(x,y) from f(x,y) and T.</li>
+        <li>Compute &Sigma;f(x,y) for a given small binary matrix.</li>
+      </ul>
+    </div>
+  </div>
+  <a class="top-link" href="#toc">&uarr; Back to Table of Contents</a>
+</section>
+<section class="chapter" id="ch7">
+  <div class="chap-label">Chapter 07</div>
+  <h2 class="chap-title">The Histogram — Turning Terrain into a Graph</h2>
+  <p class="chap-dek">The single most important tool in this course: a way of summarising an entire landscape of pixels in one simple picture.</p>
+
+  <div class="topic" id="t7-1">
+    <h3 class="topic-title"><span class="topic-num">7.1</span>What a Histogram Is</h3>
+    <h4 class="sub">Definition</h4>
+    <p>An <b>image histogram</b> is a graph that shows, for every possible intensity value (0 to 255), how many
+    pixels in the image have that exact value. The horizontal axis is intensity; the vertical axis is pixel count
+    (or, equivalently, the percentage of pixels — Section 7.2).</p>
+
+    <h4 class="sub">Why This Concept Is Needed</h4>
+    <p>A megapixel image contains millions of individual numbers — far too many to inspect one at a time. The
+    histogram is a radical compression: it throws away <em>where</em> each pixel is located, and keeps only
+    <em>how many</em> pixels have each brightness. This is exactly enough information to answer crucial questions
+    like "is this image mostly dark or mostly bright?" and, crucially, "where is the best place to put a threshold?"
+    (Section 7.5) — without ever needing to look at the image's actual layout.</p>
+
+    <h4 class="sub">Real-life Intuition</h4>
+    <p>Recall the geographic topography analogy (Chapter 4): if intensity is elevation, a histogram is exactly a
+    geographer's chart of "how much land area exists at each elevation band" — regardless of <em>where</em> on
+    the map that land is. Two mountain ranges with completely different shapes can have very similar histograms if
+    they have similar amounts of land at each height; the histogram is a shape-blind, location-blind summary.</p>
+
+    <h4 class="sub">Simple Explanation</h4>
+    <p>Walk through every pixel in the image, note its value (0–255), and add one tally mark to that value's bucket.
+    After visiting every pixel, plot the tally counts as a bar chart, one bar per intensity value. That bar chart is
+    the histogram.</p>
+
+    <h4 class="sub">Technical Explanation</h4>
+    <p>Formally, the histogram is a function h(z) that counts how many pixels have intensity exactly equal to z.
+    It is a 1-D summary derived from the full 2-D function f(x,y) — deliberately discarding spatial information
+    (the (x,y) part) to retain only the intensity distribution.</p>
+
+    <h4 class="sub">Mathematical Explanation</h4>
+    <div class="formula-box">
+      <div class="formula">h(z) = number of pixels (x,y) such that f(x,y) = z, &nbsp; for z = 0, 1, ..., 255</div>
+      <div class="legend">
+        <b>z</b> — one specific intensity level being counted (e.g., z = 128).<br>
+        <b>h(z)</b> — the count of pixels that have exactly that intensity.<br>
+        <b>Why it exists:</b> it converts the entire M&times;N grid of numbers into just 256 numbers (one count per
+        possible intensity) — a massive, information-preserving-for-our-purposes compression, useful precisely
+        because so many important image decisions (like thresholding) only need the distribution of values, not
+        their spatial arrangement.
+      </div>
+    </div>
+
+    <div class="diagram">
+      <svg viewBox="0 0 560 240" xmlns="http://www.w3.org/2000/svg">
+        <style>.b{font-family:sans-serif;font-size:12px;fill:#1B2A2E;} .ax{font-family:monospace;font-size:11px;fill:#3D5A80;}</style>
+        <line x1="50" y1="200" x2="530" y2="200" stroke="#1B2A2E" stroke-width="1.5"/>
+        <line x1="50" y1="200" x2="50" y2="20" stroke="#1B2A2E" stroke-width="1.5"/>
+        <text x="290" y="228" text-anchor="middle" class="ax">intensity z (0 &rarr; 255)</text>
+        <text x="20" y="20" class="ax">count h(z)</text>
+        <g fill="#2F6F62">
+          <rect x="55" y="170" width="8" height="30"/>
+          <rect x="65" y="150" width="8" height="50"/>
+          <rect x="75" y="120" width="8" height="80"/>
+          <rect x="85" y="90" width="8" height="110"/>
+          <rect x="95" y="70" width="8" height="130"/>
+          <rect x="105" y="60" width="8" height="140"/>
+          <rect x="115" y="80" width="8" height="120"/>
+          <rect x="125" y="110" width="8" height="90"/>
+          <rect x="135" y="150" width="8" height="50"/>
+          <rect x="145" y="180" width="8" height="20"/>
+        </g>
+        <g fill="#C97B3D">
+          <rect x="300" y="180" width="8" height="20"/>
+          <rect x="310" y="150" width="8" height="50"/>
+          <rect x="320" y="110" width="8" height="90"/>
+          <rect x="330" y="70" width="8" height="130"/>
+          <rect x="340" y="55" width="8" height="145"/>
+          <rect x="350" y="75" width="8" height="125"/>
+          <rect x="360" y="115" width="8" height="85"/>
+          <rect x="370" y="155" width="8" height="45"/>
+          <rect x="380" y="185" width="8" height="15"/>
+        </g>
+        <text x="100" y="15" text-anchor="middle" class="b" fill="#2F6F62" font-weight="bold">dark cluster</text>
+        <text x="340" y="15" text-anchor="middle" class="b" fill="#C97B3D" font-weight="bold">bright cluster</text>
+      </svg>
+      <div class="cap">Fig 7.1 — A histogram with two humps: many dark pixels (ink/text, left) and many bright pixels (paper, right), with few pixels in between.</div>
+    </div>
+
+    <h4 class="sub">Worked Example</h4>
+    <div class="worked">
+      <span class="wk-label">Example</span>
+      A tiny 4-pixel image has values 10, 10, 200, 200. Its histogram: h(10) = 2, h(200) = 2, and h(z) = 0 for
+      every other z. Plotted, this shows two separate spikes — an extreme, miniature case of exactly the bimodal
+      pattern (Section 7.3) seen in real scanned documents.
+    </div>
+
+    <div class="ir-box">
+      <h4 class="sub">Connection to Information Retrieval</h4>
+      <ul>
+        <li><b>Image Retrieval:</b> the histogram itself is one of the oldest and most widely used global features
+        for comparing images — two images with similar histograms are often visually similar in tone.</li>
+        <li><b>OCR:</b> histogram shape is used to automatically decide a good threshold before character segmentation.</li>
+        <li><b>Multimedia Retrieval:</b> colour histograms (one per channel) are a classic baseline feature in image and video search systems.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="topic" id="t7-2">
+    <h3 class="topic-title"><span class="topic-num">7.2</span>Percentage of Pixels</h3>
+    <h4 class="sub">Definition</h4>
+    <p>Rather than plotting the raw count h(z), a <b>normalised histogram</b> plots the <em>percentage</em> (or
+    fraction) of the image's total pixels that have intensity z.</p>
+
+    <h4 class="sub">Why This Concept Is Needed</h4>
+    <p>Raw counts depend on image size — a 4K photo will have far larger bar heights than a thumbnail of the exact
+    same scene, purely because it has more pixels overall. Converting to percentages removes this dependence,
+    letting you fairly compare histograms of differently sized images (essential for image retrieval, where
+    collection images are rarely all the same resolution).</p>
+
+    <h4 class="sub">Mathematical Explanation</h4>
+    <div class="formula-box">
+      <div class="formula">p(z) = h(z) / (M &times; N) &times; 100%</div>
+      <div class="legend">
+        <b>h(z)</b> — the raw pixel count at intensity z (Section 7.1).<br>
+        <b>M &times; N</b> — the total number of pixels in the image.<br>
+        <b>p(z)</b> — the percentage of the whole image's pixels that sit at intensity z.<br>
+        <b>Why it exists:</b> dividing by the total makes the histogram a genuine <em>probability distribution</em>
+        over intensities (all p(z) sum to 100%), which is size-independent and directly comparable across images
+        of different resolutions.
+      </div>
+    </div>
+
+    <h4 class="sub">Worked Example</h4>
+    <div class="worked">
+      <span class="wk-label">Example</span>
+      In a 10 &times; 10 image (100 pixels total), suppose 30 pixels have intensity 50. Then
+      p(50) = 30/100 &times; 100% = 30%. Regardless of whether this image were scaled up to 1000 &times; 1000
+      while keeping the same proportions, p(50) would stay 30% — only the raw count h(50) would change.
+    </div>
+
+    <div class="ir-box">
+      <h4 class="sub">Connection to Information Retrieval</h4>
+      <ul><li><b>Image Retrieval:</b> percentage-normalised histograms are what's actually compared/indexed across a
+      collection, since raw counts would unfairly penalise (or favour) larger images.</li></ul>
+    </div>
+    <div class="mnemonic">Memory trick — "Percentage frees you from size": normalising by M&times;N is what lets you compare a phone photo and a scanned poster on equal footing.</div>
+  </div>
+
+  <div class="topic" id="t7-3">
+    <h3 class="topic-title"><span class="topic-num">7.3</span>Unimodal, Bimodal, Multimodal Histograms</h3>
+    <h4 class="sub">Definition</h4>
+    <p>A histogram is <b>unimodal</b> if it has one dominant hump (peak), <b>bimodal</b> if it has two distinct
+    humps, and <b>multimodal</b> if it has three or more distinct humps.</p>
+
+    <h4 class="sub">Why This Concept Is Needed</h4>
+    <p>The number and shape of humps in a histogram tells us, at a glance, how many "distinct materials" or
+    "distinct regions" the image likely contains — and, critically, whether simple thresholding (Chapter 6) is
+    even an appropriate tool for this image (Section 7.5).</p>
+
+    <h4 class="sub">Real-life Intuition</h4>
+    <p>Back to the topography analogy: a unimodal histogram is like a landscape that is almost entirely one
+    elevation (a flat plain) with a bit of variation — hard to split into "high" vs "low" meaningfully. A bimodal
+    histogram is like a landscape with clearly separated lowlands and highlands (e.g., a valley and a plateau) —
+    ideal for a clean threshold at the "valley floor" between them. A multimodal histogram is like a landscape with
+    several distinct terraces at different heights — no single sea level cleanly separates "land" from "not-land."</p>
+
+    <div class="diagram">
+      <svg viewBox="0 0 600 190" xmlns="http://www.w3.org/2000/svg">
+        <style>.b{font-family:sans-serif;font-size:12px;fill:#1B2A2E;}</style>
+        <text x="100" y="16" text-anchor="middle" class="b" font-weight="bold">Unimodal</text>
+        <polyline points="20,150 40,140 60,110 80,70 100,40 120,70 140,110 160,140 180,150" fill="none" stroke="#2F6F62" stroke-width="2.5"/>
+        <line x1="20" y1="150" x2="180" y2="150" stroke="#1B2A2E"/>
+
+        <text x="300" y="16" text-anchor="middle" class="b" font-weight="bold">Bimodal</text>
+        <polyline points="220,150 240,120 260,80 280,120 300,145 320,120 340,80 360,120 380,150" fill="none" stroke="#C97B3D" stroke-width="2.5"/>
+        <line x1="220" y1="150" x2="380" y2="150" stroke="#1B2A2E"/>
+        <line x1="300" y1="150" x2="300" y2="140" stroke="#3D5A80" stroke-width="2"/>
+        <text x="300" y="170" text-anchor="middle" class="b" fill="#3D5A80" font-size="10">valley (threshold spot)</text>
+
+        <text x="500" y="16" text-anchor="middle" class="b" font-weight="bold">Multimodal</text>
+        <polyline points="420,150 435,125 450,95 465,125 480,145 495,120 510,90 525,120 540,148 555,125 570,100 580,150"
+          fill="none" stroke="#3D5A80" stroke-width="2.5"/>
+        <line x1="420" y1="150" x2="580" y2="150" stroke="#1B2A2E"/>
+      </svg>
+      <div class="cap">Fig 7.2 — Unimodal (one material), bimodal (two materials — e.g. ink vs paper), and multimodal (several materials) histogram shapes.</div>
+    </div>
+
+    <table class="cmp">
+      <tr><th>Shape</th><th>Typical cause</th><th>Thresholding implication</th></tr>
+      <tr><td>Unimodal</td><td>Nearly uniform scene (one dominant surface)</td><td>Hard to find a meaningful split point</td></tr>
+      <tr><td>Bimodal</td><td>Two clearly distinct regions (e.g. text vs. background)</td><td>Ideal — threshold at the valley between the two peaks</td></tr>
+      <tr><td>Multimodal</td><td>Several distinct regions/materials</td><td>Needs multiple thresholds or smarter, adaptive methods</td></tr>
+    </table>
+
+    <h4 class="sub">Worked Example</h4>
+    <div class="worked">
+      <span class="wk-label">Example</span>
+      A clean scan of typed black text on white paper produces a strongly bimodal histogram: one peak near 0–40
+      (ink) and another near 220–255 (paper), with very few pixels in between. This is precisely the "textbook"
+      case where a single global threshold works beautifully.
+    </div>
+
+    <div class="ir-box">
+      <h4 class="sub">Connection to Information Retrieval</h4>
+      <ul><li><b>OCR:</b> a bimodal histogram is the green light for simple global thresholding; a multimodal one signals that the document (e.g. a photo embedded in text, or uneven lighting) needs more advanced, adaptive binarisation before OCR will work well.</li></ul>
+    </div>
+
+    <h4 class="sub">Common Interview / Exam Questions</h4>
+    <ul><li>Why is a bimodal histogram considered ideal for simple global thresholding?</li>
+    <li>Give a real-world scenario that would produce a multimodal histogram.</li></ul>
+    <div class="mnemonic">Memory trick — "uni-one, bi-two, multi-many": count the humps, name the mode.</div>
+  </div>
+
+  <div class="topic" id="t7-4">
+    <h3 class="topic-title"><span class="topic-num">7.4</span>Peaks and Valleys</h3>
+    <h4 class="sub">Definition</h4>
+    <p>A <b>peak</b> in a histogram is a local maximum — an intensity value with more pixels than its immediate
+    neighbours on both sides. A <b>valley</b> is a local minimum — an intensity value with fewer pixels than its
+    immediate neighbours on both sides.</p>
+
+    <h4 class="sub">Why This Concept Is Needed</h4>
+    <p>Peaks tell us where the "dominant materials" of the image sit on the brightness scale (e.g., ink, paper).
+    Valleys tell us where <em>few</em> pixels exist — precisely the safest place to cut the image into foreground
+    and background, since cutting there misclassifies the fewest pixels.</p>
+
+    <h4 class="sub">Real-life Intuition</h4>
+    <p>Back to the terrain: a histogram peak is a mountain summit — lots of land at that height. A histogram valley
+    is a mountain pass — very little land at that height, because it's a transition zone between two summits.
+    Choosing where to place a border fence, you'd naturally pick the pass (valley), not the middle of a summit
+    (peak), since fewer people/pixels actually live there.</p>
+
+    <h4 class="sub">Technical Explanation</h4>
+    <p>Mathematically, z is a peak if h(z) &gt; h(z&minus;1) and h(z) &gt; h(z+1); z is a valley if
+    h(z) &lt; h(z&minus;1) and h(z) &lt; h(z+1). In a clean bimodal histogram, there are exactly two peaks and one
+    valley between them — and that valley is exactly where Section 7.5's threshold should be placed.</p>
+
+    <div class="ir-box">
+      <h4 class="sub">Connection to Information Retrieval</h4>
+      <ul><li><b>Document Image Analysis:</b> automatic threshold-selection algorithms (e.g., simplified versions of
+      Otsu's method) work by explicitly hunting for the histogram valley between two peaks.</li></ul>
+    </div>
+    <div class="mnemonic">Memory trick — "Peaks are popular, valleys are lonely": pixels crowd at peaks and avoid valleys — so valleys are the safest fence-lines.</div>
+  </div>
+
+  <div class="topic" id="t7-5">
+    <h3 class="topic-title"><span class="topic-num">7.5</span>Choosing a Threshold from the Histogram</h3>
+    <h4 class="sub">Definition</h4>
+    <p>The standard rule for choosing a good threshold T (Chapter 6) from a bimodal histogram is to set
+    <b>T = the intensity value at the valley between the two peaks</b>.</p>
+
+    <h4 class="sub">Why This Concept Is Needed</h4>
+    <p>Chapter 6 introduced T as "just some chosen number" — but chosen how? The histogram answers this precisely:
+    since the valley has the fewest pixels, placing T there misclassifies the smallest possible number of pixels,
+    giving the cleanest possible split between foreground and background.</p>
+
+    <h4 class="sub">Real-life Intuition</h4>
+    <p>If you must build a fence dividing a valley village from a plateau village, you build it at the actual
+    mountain pass (few people live there, so few people end up on the "wrong side"), not halfway up either
+    village's own hillside (where you'd cut straight through a crowded neighbourhood).</p>
+
+    <div class="diagram">
+      <svg viewBox="0 0 500 210" xmlns="http://www.w3.org/2000/svg">
+        <style>.b{font-family:sans-serif;font-size:12px;fill:#1B2A2E;}</style>
+        <polyline points="20,170 60,130 100,80 140,120 180,160 220,130 260,80 300,120 340,170" fill="none" stroke="#2F6F62" stroke-width="2.5"/>
+        <line x1="20" y1="170" x2="340" y2="170" stroke="#1B2A2E"/>
+        <line x1="180" y1="170" x2="180" y2="30" stroke="#C97B3D" stroke-width="2" stroke-dasharray="5 4"/>
+        <text x="180" y="20" text-anchor="middle" class="b" fill="#C97B3D" font-weight="bold">T = valley intensity</text>
+        <text x="100" y="70" text-anchor="middle" class="b" fill="#2F6F62">peak: paper</text>
+        <text x="260" y="70" text-anchor="middle" class="b" fill="#2F6F62">peak: ink</text>
+      </svg>
+      <div class="cap">Fig 7.3 — The threshold is placed exactly at the valley, minimising misclassified pixels on both sides.</div>
+    </div>
+
+    <h4 class="sub">Worked Example</h4>
+    <div class="worked">
+      <span class="wk-label">Example</span>
+      A histogram shows a peak at z=30 (ink), a valley at z=110 (very few pixels), and a peak at z=210 (paper).
+      Setting T = 110 in f<sup>T</sup>(x,y) = 1 if f(x,y) &gt; 110 else 0 cleanly separates the two materials,
+      since almost no real pixel sits exactly at 110 to be misclassified either way.
+    </div>
+
+    <div class="callout tip"><b class="tag">Tip for exams</b>If asked to "choose a threshold given a histogram
+    sketch," always look for the valley between the two tallest peaks — examiners usually draw an obviously
+    bimodal shape specifically to test this rule.</div>
+
+    <div class="ir-box">
+      <h4 class="sub">Connection to Information Retrieval</h4>
+      <ul><li><b>OCR:</b> automatic (as opposed to manually chosen) thresholding is what makes large-scale document
+      digitisation for full-text search possible without a human tuning every single scan by hand.</li></ul>
+    </div>
+
+    <h4 class="sub">Common Interview / Exam Questions</h4>
+    <ul><li>Why is the histogram valley the preferred location for a threshold, rather than the midpoint between the two peak intensities?</li></ul>
+    <div class="mnemonic">Memory trick — "Fence at the pass, not the peak."</div>
+  </div>
+
+  <div class="topic" id="t7-1b">
+    <h3 class="topic-title" style="border:none;"><span class="topic-num"></span>Why the Histogram Is Useful — A Recap</h3>
+    <p>Pulling Sections 7.1–7.5 together: the histogram is useful because it (1) compresses an entire image into a
+    manageable 1-D summary, (2) reveals how many distinct materials/regions likely exist (unimodal/bimodal/multimodal),
+    and (3) directly tells you where to place a threshold (the valley) if binarisation is the goal — turning a vague,
+    manual decision into a precise, data-driven one.</p>
+  </div>
+
+  <div class="grid2">
+    <div class="card">
+      <h5>Chapter 7 — Summary</h5>
+      <p style="margin:0;">The histogram h(z), often normalised into percentages p(z), reveals the shape of an
+      image's brightness distribution. Peaks mark dominant materials; valleys mark the best places to threshold.
+      A bimodal histogram with a clear valley is the easiest case for clean binarisation.</p>
+    </div>
+    <div class="card">
+      <h5>Exam Questions (Chapter Recap)</h5>
+      <ul style="margin:0;">
+        <li>Define h(z) and p(z) and explain the difference.</li>
+        <li>Sketch a bimodal histogram and mark where you would place a threshold, with justification.</li>
+      </ul>
+    </div>
+  </div>
+  <a class="top-link" href="#toc">&uarr; Back to Table of Contents</a>
+</section>
+<section class="chapter" id="ch8">
+  <div class="chap-label">Chapter 08</div>
+  <h2 class="chap-title">Synthesis — From Pixels to Search Engines</h2>
+  <p class="chap-dek">The full pipeline, laid out end to end, so you can see exactly how one lecture's worth of ideas becomes a working retrieval system.</p>
+
+  <p>Here is the complete chain, using this chapter's own vocabulary at every step:</p>
+
+  <div class="diagram">
+    <svg viewBox="0 0 780 340" xmlns="http://www.w3.org/2000/svg">
+      <defs><marker id="arr2" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#2F6F62"/></marker></defs>
+      <style>.b{font-family:sans-serif;font-size:12px;fill:#1B2A2E;} .n{font-family:monospace;font-size:10.5px;fill:#3D5A80;}</style>
+
+      <rect x="20" y="20" width="160" height="56" rx="8" fill="#F3EFE4" stroke="#2F6F62" stroke-width="1.5"/>
+      <text x="100" y="44" text-anchor="middle" class="b" font-weight="bold">Continuous scene</text>
+      <text x="100" y="60" text-anchor="middle" class="n">(a page, a photo)</text>
+
+      <line x1="100" y1="76" x2="100" y2="110" stroke="#2F6F62" stroke-width="2" marker-end="url(#arr2)"/>
+      <text x="230" y="98" class="n">Ch.3 — delimiter space packing / rectangular granular space</text>
+
+      <rect x="20" y="110" width="160" height="56" rx="8" fill="#F3EFE4" stroke="#2F6F62" stroke-width="1.5"/>
+      <text x="100" y="134" text-anchor="middle" class="b" font-weight="bold">Pixel grid</text>
+      <text x="100" y="150" text-anchor="middle" class="n">f(x,y) = z, Ch.5</text>
+
+      <line x1="100" y1="166" x2="100" y2="200" stroke="#2F6F62" stroke-width="2" marker-end="url(#arr2)"/>
+      <text x="230" y="188" class="n">Ch.7 — histogram h(z), peaks &amp; valleys</text>
+
+      <rect x="20" y="200" width="160" height="56" rx="8" fill="#F3EFE4" stroke="#C97B3D" stroke-width="1.5"/>
+      <text x="100" y="224" text-anchor="middle" class="b" font-weight="bold">Threshold T</text>
+      <text x="100" y="240" text-anchor="middle" class="n">chosen at valley</text>
+
+      <line x1="100" y1="256" x2="100" y2="290" stroke="#2F6F62" stroke-width="2" marker-end="url(#arr2)"/>
+      <text x="230" y="278" class="n">Ch.6 — f&#7488;(x,y), Ch.2 — object / skeleton</text>
+
+      <rect x="20" y="290" width="160" height="40" rx="8" fill="#F3EFE4" stroke="#C97B3D" stroke-width="1.5"/>
+      <text x="100" y="314" text-anchor="middle" class="b" font-weight="bold">Object / Skeleton</text>
+
+      <line x1="180" y1="310" x2="420" y2="310" stroke="#3D5A80" stroke-width="2" marker-end="url(#arr2)"/>
+      <text x="300" y="298" text-anchor="middle" class="n">extraction (Ch.1.2) complete</text>
+
+      <rect x="430" y="290" width="160" height="40" rx="8" fill="#DCE7EF" stroke="#3D5A80" stroke-width="1.5"/>
+      <text x="510" y="314" text-anchor="middle" class="b" font-weight="bold">Feature vector</text>
+
+      <line x1="590" y1="290" x2="590" y2="70" stroke="#3D5A80" stroke-width="2" marker-end="url(#arr2)"/>
+      <text x="680" y="180" class="n">indexed alongside</text>
+      <text x="680" y="195" class="n">every other document</text>
+
+      <rect x="510" y="20" width="180" height="56" rx="8" fill="#DCE7EF" stroke="#3D5A80" stroke-width="1.5"/>
+      <text x="600" y="44" text-anchor="middle" class="b" font-weight="bold">IR System Index</text>
+      <text x="600" y="60" text-anchor="middle" class="n">match, rank (Ch.1.1)</text>
+    </svg>
+    <div class="cap">Fig 8.1 — The complete chain from raw scene to a searchable entry in an IR system, chapter by chapter.</div>
+  </div>
+
+  <h4 class="sub">The Story, in Words</h4>
+  <p>A continuous scene (a manuscript page, a photograph) is first <b>packed</b> into a rectangular grid of
+  <b>pixels</b> (Chapters 3 &amp; 5), each holding an intensity value governed by f(x,y) = z, quantised into 256
+  levels because of how binary storage works. The whole grid's brightness distribution is then summarised by a
+  <b>histogram</b> (Chapter 7); its peaks reveal the dominant materials (ink vs. paper) and its valley suggests
+  the best <b>threshold</b> (Chapter 6) for turning the grayscale image into a clean binary image f<sup>T</sup>(x,y).
+  From that binary image, connected regions become <b>objects</b>, which can be thinned to <b>skeletons</b>
+  (Chapter 2) — this entire chain is <b>extraction</b> (Chapter 1.2), producing a compact feature representation of
+  one document. Only once this has been done for every document in a collection does true <b>Information
+  Retrieval</b> begin: indexing those features and matching/ranking them against a user's query (Chapter 1.1).</p>
+
+  <h4 class="sub">Why Your Professor Teaches It This Way</h4>
+  <p>Document Image Analysis, Mathematical Morphology, Pattern Recognition, Computer Vision and Information
+  Retrieval are not five separate subjects to Dr. Sagar — they are five different vantage points on the exact
+  same pipeline you've just traced. Mathematical morphology gives the tools for object/skeleton extraction and
+  the topography analogy; pattern recognition classifies the resulting objects/skeletons; computer vision is the
+  broader discipline these techniques belong to; and Information Retrieval is simply what happens once those
+  extracted representations are indexed and searched, at scale, across a whole collection.</p>
+
+  <table class="cmp">
+    <tr><th>Course area</th><th>What it contributes to the pipeline</th></tr>
+    <tr><td>Document Image Analysis</td><td>The whole Chapter 3–6 pipeline, applied specifically to scanned pages</td></tr>
+    <tr><td>Mathematical Morphology</td><td>Rigorous tools for thresholding, object extraction, skeletonisation (Ch.2, Ch.6)</td></tr>
+    <tr><td>Pattern Recognition</td><td>Classifying the objects/skeletons once extracted</td></tr>
+    <tr><td>Computer Vision</td><td>The overarching field that includes all image-understanding tasks above</td></tr>
+    <tr><td>Information Retrieval</td><td>Indexing, matching and ranking the extracted representations across a collection</td></tr>
+  </table>
+
+  <div class="callout">
+    <b class="tag">How to revise this chapter</b>
+    If you can redraw Fig 8.1 from memory, labelling every arrow with the correct chapter number and formula, you
+    understand the entire first lecture of this course — this diagram <em>is</em> the syllabus in miniature.
+  </div>
+
+  <h4 class="sub">Common Interview / Exam Questions</h4>
+  <ul>
+    <li>Trace the full pipeline from a raw scanned page to a searchable digital library entry, naming every intermediate representation.</li>
+    <li>Why does Information Retrieval depend on prior extraction steps when the "documents" are images rather than plain text?</li>
+    <li>How do mathematical morphology and information retrieval relate, according to this pipeline?</li>
+  </ul>
+
+  <div class="mnemonic">Memory trick — "Pack, Picture, Plot, Pick, Pull, Ping": Pack the space, form the Picture (pixels), Plot the histogram, Pick a threshold, Pull out the object/skeleton, Ping the index (retrieve).</div>
+
+  <h4 class="sub">Key Points to Remember</h4>
+  <ul>
+    <li>Every concept in this lecture is a step in one continuous pipeline, not an isolated fact.</li>
+    <li>Extraction (Chapters 2–7) happens per-document; Retrieval (Chapter 1.1) happens across the whole collection.</li>
+    <li>The topography analogy (Chapter 4) is the mental thread tying mathematical morphology, GIS, and document image analysis together.</li>
+  </ul>
+
+  <div class="grid2">
+    <div class="card">
+      <h5>Whole-Lecture Summary</h5>
+      <p style="margin:0;">Space is packed into pixels; pixels form a function f(x,y)=z quantised to 256 levels;
+      the function's histogram reveals peaks and valleys; a valley gives a good threshold; thresholding yields a
+      binary image whose objects and skeletons are extracted; extracted representations, once indexed across a
+      collection, are what Information Retrieval actually searches.</p>
+    </div>
+    <div class="card">
+      <h5>Further Reading</h5>
+      <ul style="margin:0;">
+        <li>Gonzalez &amp; Woods, <em>Digital Image Processing</em> — image fundamentals and thresholding chapters</li>
+        <li>Chowdhury, G.G., <em>Introduction to Modern Information Retrieval</em> — Paper 11's core reference</li>
+        <li>Any introduction to Mathematical Morphology (Serra, or lecture notes on morphological image analysis)</li>
+      </ul>
+    </div>
+  </div>
+  <a class="top-link" href="#toc">&uarr; Back to Table of Contents</a>
+</section>
+
+<footer>
+  Prepared as primary study material for Paper 11: Information Retrieval &middot; ISI Bangalore, M.Sc. LIS, Semester III &middot; Instructor: Dr. Daya Sagar
+  <br>Read in chapter order once, then use the Table of Contents as a revision index before exams.
+</footer>
 
 </body>
 </html>
