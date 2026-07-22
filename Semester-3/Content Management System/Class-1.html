@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>HTML Notes - Revision Sheet</title>
+<style>
+  :root{
+    --bg:#0f1117; --card:#171a23; --border:#2a2e3a;
+    --text:#e6e8ef; --muted:#9aa0b0; --accent:#7dd3fc; --accent2:#f9a8d4;
+    --code-bg:#0b0d13; --tag:#c4b5fd;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; background:var(--bg); color:var(--text);
+    font-family:'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    line-height:1.55;
+  }
+  header{
+    padding:36px 24px 20px; text-align:center;
+    border-bottom:1px solid var(--border);
+  }
+  header h1{margin:0 0 6px; font-size:2rem;}
+  header p{margin:0; color:var(--muted);}
+  main{max-width:900px; margin:0 auto; padding:24px;}
+  nav{
+    background:var(--card); border:1px solid var(--border); border-radius:10px;
+    padding:16px 20px; margin-bottom:28px;
+  }
+  nav h2{margin:0 0 10px; font-size:1rem; color:var(--accent);}
+  nav ul{columns:2; margin:0; padding-left:18px;}
+  nav a{color:var(--text); text-decoration:none;}
+  nav a:hover{color:var(--accent);}
+  section{
+    background:var(--card); border:1px solid var(--border); border-radius:10px;
+    padding:20px 24px; margin-bottom:20px;
+  }
+  section h2{
+    margin-top:0; font-size:1.15rem; color:var(--accent);
+    border-bottom:1px solid var(--border); padding-bottom:8px;
+  }
+  .tag{
+    display:inline-block; background:#241f38; color:var(--tag);
+    padding:2px 8px; border-radius:5px; font-family:monospace; font-size:0.9em;
+  }
+  .row{
+    display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:12px;
+  }
+  @media(max-width:640px){ .row{grid-template-columns:1fr;} nav ul{columns:1;} }
+  .col h4{
+    margin:0 0 8px; font-size:0.78rem; text-transform:uppercase;
+    letter-spacing:.05em; color:var(--muted);
+  }
+  pre{
+    background:var(--code-bg); border:1px solid var(--border); border-radius:8px;
+    padding:12px 14px; overflow-x:auto; margin:0; font-size:0.85rem;
+  }
+  code{font-family:'Consolas', monospace; color:#a5f3fc;}
+  .demo{
+    background:#0d1017; border:1px dashed var(--border); border-radius:8px;
+    padding:14px; min-height:40px;
+  }
+  .note{
+    margin-top:12px; padding:10px 14px; background:#1c2130; border-left:3px solid var(--accent2);
+    border-radius:6px; font-size:0.9rem; color:var(--muted);
+  }
+  .note b{color:var(--accent2);}
+  table{border-collapse:collapse; width:100%;}
+  table, th, td{border:1px solid #444;}
+  th, td{padding:8px 10px;}
+  th{background:#1e2330;}
+  ul.circle{list-style-type:circle;}
+  ul.square{list-style-type:square;}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>HTML Tags — Revision Notes</h1>
+  <p>Content Management System class · quick reference with live demos</p>
+</header>
+
+<main>
+
+<nav>
+  <h2>Jump to</h2>
+  <ul>
+    <li><a href="#headings">Headings &amp; Structure</a></li>
+    <li><a href="#linebreaks">Line Breaks &amp; Rules</a></li>
+    <li><a href="#textformat">Text Formatting</a></li>
+    <li><a href="#lists">Ordered &amp; Unordered Lists</a></li>
+    <li><a href="#links">Links</a></li>
+    <li><a href="#images">Images</a></li>
+    <li><a href="#tables">Tables Basics</a></li>
+    <li><a href="#tablespan">Rowspan / Colspan</a></li>
+    <li><a href="#nested">Nested Tables</a></li>
+  </ul>
+</nav>
+
+<section id="headings">
+  <h2><span class="tag">&lt;h1&gt;</span> to <span class="tag">&lt;h6&gt;</span> — Headings</h2>
+  <div class="row">
+    <div class="col">
+      <h4>Code</h4>
+      <pre><code>&lt;h1&gt;This is header&lt;/h1&gt;</code></pre>
+    </div>
+    <div class="col">
+      <h4>Output</h4>
+      <div class="demo"><h1 style="margin:0;">This is header</h1></div>
+    </div>
+  </div>
+  <div class="note">6 levels available: <b>h1</b> (largest/most important) down to <b>h6</b> (smallest). Only one <b>h1</b> per page is best practice — it's the main title.</div>
+</section>
+
+<section id="linebreaks">
+  <h2><span class="tag">&lt;hr&gt;</span> and <span class="tag">&lt;br&gt;</span></h2>
+  <div class="row">
+    <div class="col">
+      <h4>Code</h4>
+      <pre><code>&lt;hr&gt;
+This is paragraph&lt;br&gt;
+This is &lt;br&gt; paragraph2</code></pre>
+    </div>
+    <div class="col">
+      <h4>Output</h4>
+      <div class="demo">
+        <hr>This is paragraph<br>
+        This is <br> paragraph2
+      </div>
+    </div>
+  </div>
+  <div class="note">
+    <b>&lt;hr&gt;</b> = horizontal rule, draws a divider line (used to separate sections).<br>
+    <b>&lt;br&gt;</b> = line break, forces text to a new line without starting a new paragraph. Both are <b>self-closing / empty tags</b> (no closing tag or content needed).
+  </div>
+</section>
+
+<section id="textformat">
+  <h2>Text Formatting — <span class="tag">&lt;u&gt;</span> <span class="tag">&lt;b&gt;</span> and the invalid tag caught here</h2>
+  <div class="row">
+    <div class="col">
+      <h4>Code</h4>
+      <pre><code>today is &lt;u&gt;&lt;b&gt;Tuesday&lt;/b&gt;&lt;/u&gt;
+today is &lt;strang&gt;Tuesday&lt;/strang&gt;</code></pre>
+    </div>
+    <div class="col">
+      <h4>Output</h4>
+      <div class="demo">
+        today is <u><b>Tuesday</b></u><br>
+        today is Tuesday
+      </div>
+    </div>
+  </div>
+  <div class="note">
+    <b>&lt;u&gt;</b> underlines text, <b>&lt;b&gt;</b> makes it bold — tags can be nested (innermost applies last, outermost wraps everything).<br>
+    ⚠️ <b>&lt;strang&gt;</b> is not a real HTML tag (typo for <span class="tag">&lt;strong&gt;</span>). Browsers silently ignore unknown tags and just render the text inside — a good reminder that HTML doesn't "error out," it fails silently. Correct tag: <span class="tag">&lt;strong&gt;</span> (bold + semantic importance).
+  </div>
+</section>
+
+<section id="lists">
+  <h2>Lists — <span class="tag">&lt;ol&gt;</span> and <span class="tag">&lt;ul&gt;</span></h2>
+  <div class="row">
+    <div class="col">
+      <h4>Code</h4>
+      <pre><code>&lt;ol type="I"&gt;
+  &lt;li&gt;Item1&lt;/li&gt;
+  &lt;li&gt;Item2&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;ul&gt;...&lt;/ul&gt;              &lt;!-- default: disc --&gt;
+&lt;ul type="circle"&gt;...&lt;/ul&gt;
+&lt;ul type="square"&gt;...&lt;/ul&gt;</code></pre>
+    </div>
+    <div class="col">
+      <h4>Output</h4>
+      <div class="demo">
+        <ol type="I"><li>Item1</li><li>Item2</li></ol>
+        <ul><li>Item1</li><li>Item2</li></ul>
+        <ul class="circle"><li>Item1</li><li>Item2</li></ul>
+        <ul class="square"><li>Item1</li><li>Item2</li></ul>
+      </div>
+    </div>
+  </div>
+  <div class="note">
+    <b>&lt;ol&gt;</b> = ordered list (numbered/lettered). <b>type</b> attribute controls the marker style:<br>
+    &nbsp;&nbsp;<code>type="1"</code> numbers (default) · <code>type="A"</code> A,B,C · <code>type="a"</code> a,b,c · <code>type="I"</code> Roman numerals · <code>type="i"</code> lowercase roman.<br>
+    <b>&lt;ul&gt;</b> = unordered list (bullets). <b>type</b> values: <code>disc</code> (default, filled circle) · <code>circle</code> (hollow) · <code>square</code>.<br>
+    Every item inside either list uses <span class="tag">&lt;li&gt;</span> (list item).
+  </div>
+</section>
+
+<section id="links">
+  <h2><span class="tag">&lt;a&gt;</span> — Anchor / Hyperlink</h2>
+  <div class="row">
+    <div class="col">
+      <h4>Code</h4>
+      <pre><code>&lt;a href="https://google.com"&gt;Google&lt;/a&gt;</code></pre>
+    </div>
+    <div class="col">
+      <h4>Output</h4>
+      <div class="demo"><a style="color:var(--accent);" href="https://google.com">Google</a></div>
+    </div>
+  </div>
+  <div class="note">
+    <b>href</b> = the destination URL (required). The text between opening/closing tags is what's clickable.
+    Useful extra attributes: <code>target="_blank"</code> (opens in new tab), <code>title="..."</code> (tooltip on hover).
+  </div>
+</section>
+
+<section id="images">
+  <h2><span class="tag">&lt;img&gt;</span> — Images</h2>
+  <div class="row">
+    <div class="col">
+      <h4>Code</h4>
+      <pre><code>&lt;img src="logo.png" height="200"
+     alt="Indian Statistical Institute" /&gt;</code></pre>
+    </div>
+    <div class="col">
+      <h4>Output</h4>
+      <div class="demo"><img src="https://www.isical.ac.in/isical_web/images/logo.png" height="80" alt="Indian Statistical Institute"/></div>
+    </div>
+  </div>
+  <div class="note">
+    <b>src</b> = image path/URL (required). <b>height</b> / <b>width</b> = size in pixels (set only one to keep aspect ratio). <b>alt</b> = fallback text shown if the image fails to load, and read aloud by screen readers — always include it. <b>&lt;img&gt;</b> is self-closing (<code>/&gt;</code>).
+  </div>
+</section>
+
+<section id="tables">
+  <h2><span class="tag">&lt;table&gt;</span> — Basic Structure</h2>
+  <div class="row">
+    <div class="col">
+      <h4>Code</h4>
+      <pre><code>&lt;table border="1" cellpadding="10"&gt;
+  &lt;tr&gt;
+    &lt;th&gt;SN&lt;/th&gt;
+    &lt;th&gt;State&lt;/th&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+    &lt;td&gt;1.&lt;/td&gt;
+    &lt;td&gt;Karnataka&lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/table&gt;</code></pre>
+    </div>
+    <div class="col">
+      <h4>Output</h4>
+      <div class="demo">
+        <table>
+          <tr><th>SN</th><th>State</th></tr>
+          <tr><td>1.</td><td>Karnataka</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="note">
+    <b>&lt;table&gt;</b> wraps the whole table. <b>&lt;tr&gt;</b> = table row. <b>&lt;th&gt;</b> = header cell (bold, centered by default). <b>&lt;td&gt;</b> = normal data cell.<br>
+    <b>border</b> = thickness of the grid lines. <b>cellpadding</b> = space between a cell's border and its content. (Modern CSS usually replaces these attributes, but they still work.)
+  </div>
+</section>
+
+<section id="tablespan">
+  <h2><span class="tag">rowspan</span> / <span class="tag">colspan</span> / <span class="tag">width</span></h2>
+  <div class="row">
+    <div class="col">
+      <h4>Code</h4>
+      <pre><code>&lt;tr&gt;
+  &lt;td&gt;6.&lt;/td&gt;
+  &lt;td&gt;Punjab&lt;/td&gt;
+  &lt;td rowspan="2"&gt;Chandigarh&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;td&gt;7.&lt;/td&gt;
+  &lt;td&gt;Haryana&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;td colspan="2"&gt;This is Header&lt;/td&gt;
+&lt;td width="25%"&gt;Menu&lt;/td&gt;</code></pre>
+    </div>
+    <div class="col">
+      <h4>Output</h4>
+      <div class="demo">
+        <table>
+          <tr><td>6.</td><td>Punjab</td><td rowspan="2">Chandigarh</td></tr>
+          <tr><td>7.</td><td>Haryana</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="note">
+    <b>rowspan="2"</b> on a cell makes it stretch <b>vertically</b> across 2 rows — so the next row must have <b>one fewer <span class="tag">&lt;td&gt;</span></b> (that cell is "absorbed").<br>
+    <b>colspan="2"</b> makes a cell stretch <b>horizontally</b> across 2 columns — used for a full-width header/footer row.<br>
+    <b>width="25%"</b> fixes a column's width as a percentage of the table.
+  </div>
+</section>
+
+<section id="nested">
+  <h2>Nested Tables</h2>
+  <div class="row">
+    <div class="col">
+      <h4>Code</h4>
+      <pre><code>&lt;table&gt;
+  ...outer rows...
+  &lt;table&gt;   &lt;!-- table inside a cell --&gt;
+    &lt;tr&gt;&lt;td colspan="2"&gt;Header&lt;/td&gt;&lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td width="25%"&gt;Menu&lt;/td&gt;
+      &lt;td&gt;Content&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;&lt;td colspan="2"&gt;Footer&lt;/td&gt;&lt;/tr&gt;
+  &lt;/table&gt;
+&lt;/table&gt;</code></pre>
+    </div>
+    <div class="col">
+      <h4>Output</h4>
+      <div class="demo">
+        <table>
+          <tr><td colspan="2">This is Header</td></tr>
+          <tr><td width="25%">Menu</td><td>Content</td></tr>
+          <tr><td colspan="2">This is Footer</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="note">
+    A <span class="tag">&lt;table&gt;</span> can be placed <b>inside a cell of another table</b> to build layouts (e.g. a mini header/menu/content/footer block within one row). Common in old-style page layouts before CSS Grid/Flexbox.<br>
+    <b>Correction:</b> in the uploaded file the inner <span class="tag">&lt;table&gt;</span> was placed directly as a child of <span class="tag">&lt;tr&gt;</span>, not inside a <span class="tag">&lt;td&gt;</span> — technically invalid nesting (a nested table should sit inside a <span class="tag">&lt;td&gt;</span>). Browsers auto-correct it, but write it properly as: <code>&lt;td&gt;&lt;table&gt;...&lt;/table&gt;&lt;/td&gt;</code>.
+  </div>
+</section>
+
+</main>
+</body>
+</html>
